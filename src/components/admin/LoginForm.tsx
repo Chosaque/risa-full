@@ -1,0 +1,43 @@
+"use client";
+
+import { useActionState } from "react";
+import { Loader2, Lock, Mail } from "lucide-react";
+import { loginAction, type LoginState } from "@/actions/auth";
+import { Field, Input } from "@/components/ui/field";
+
+export function LoginForm({ next }: { next: string }) {
+  const [state, formAction, pending] = useActionState<LoginState, FormData>(loginAction, {});
+
+  return (
+    <form action={formAction} className="space-y-4">
+      <input type="hidden" name="next" value={next} />
+      <Field label="อีเมล" required>
+        <div className="relative">
+          <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
+          <Input name="email" type="email" required autoComplete="username" autoFocus className="pl-9" />
+        </div>
+      </Field>
+      <Field label="รหัสผ่าน" required>
+        <div className="relative">
+          <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
+          <Input name="password" type="password" required autoComplete="current-password" className="pl-9" />
+        </div>
+      </Field>
+
+      {state.error && (
+        <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
+          {state.error}
+        </p>
+      )}
+
+      <button
+        type="submit"
+        disabled={pending}
+        className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-ink text-sm font-medium text-white transition-colors hover:bg-ink-2 disabled:opacity-60"
+      >
+        {pending && <Loader2 className="size-4 animate-spin" />}
+        เข้าสู่ระบบ
+      </button>
+    </form>
+  );
+}

@@ -1,0 +1,136 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink:        #0a0a0b;
+  --color-ink-2:      #33363c;
+  --color-muted:      #6b7076;
+  --color-faint:      #9aa0a6;
+  --color-line:       #e4e6e9;
+  --color-line-soft:  #eff1f3;
+  --color-paper:      #ffffff;
+  --color-surface:    #f6f7f8;
+  --color-surface-2:  #edeff1;
+
+  /* Overridden at runtime from the `settings` row so the admin can retheme. */
+  --color-accent:     #1b4dff;
+  --color-accent-ink: #ffffff;
+  --color-accent-soft: color-mix(in oklab, var(--color-accent) 8%, white);
+  --color-accent-line: color-mix(in oklab, var(--color-accent) 24%, white);
+
+  --font-sans: var(--font-plex-thai), "IBM Plex Sans", ui-sans-serif, system-ui,
+               "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius-card: 14px;
+
+  --text-display: 3.5rem;
+  --text-display--line-height: 1.14;
+  --text-display--letter-spacing: -0.022em;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    /* Thai vowel and tone marks sit above and below the baseline: body copy
+       needs noticeably more leading than a Latin-only face would. */
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    line-height: 1.28;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  /* Thai has no spaces between words; the browser's own dictionary breaker
+     handles it. Never force break-all here — it splits syllables. */
+  :lang(th) h1, :lang(th) h2, :lang(th) h3 {
+    line-height: 1.42;
+    letter-spacing: 0;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+  :lang(th) p, :lang(th) li { line-height: 1.9; }
+  p { text-wrap: pretty; }
+  a { color: inherit; }
+  ::selection { background: var(--color-accent); color: var(--color-accent-ink); }
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+  img, svg, video { max-width: 100%; height: auto; }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) { .container-page { padding-inline: 2rem; } }
+
+  /* Long-form content rendered from the rich-text editor. */
+  .prose-risa { color: var(--color-ink-2); font-size: 1.0625rem; }
+  .prose-risa > * + * { margin-top: 1.15em; }
+  .prose-risa h2 { font-size: 1.5rem; font-weight: 600; color: var(--color-ink); margin-top: 2em; }
+  .prose-risa h3 { font-size: 1.2rem; font-weight: 600; color: var(--color-ink); margin-top: 1.6em; }
+  .prose-risa ul, .prose-risa ol { padding-inline-start: 1.35em; }
+  .prose-risa ul { list-style: disc; }
+  .prose-risa ol { list-style: decimal; }
+  .prose-risa li + li { margin-top: 0.4em; }
+  .prose-risa a { color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
+  .prose-risa strong { color: var(--color-ink); font-weight: 600; }
+  .prose-risa blockquote {
+    border-inline-start: 3px solid var(--color-accent);
+    padding-inline-start: 1.1em; font-style: normal; color: var(--color-ink);
+  }
+  .prose-risa img { border-radius: var(--radius-card); }
+  .prose-risa code {
+    font-family: var(--font-mono); font-size: 0.9em;
+    background: var(--color-surface); padding: 0.15em 0.4em; border-radius: 4px;
+  }
+
+  .hairline { border-color: var(--color-line); }
+}
+
+/* ── inline edit affordances ───────────────────────────────────────────── */
+[data-editable] { position: relative; }
+body[data-edit-mode="on"] [data-editable] {
+  outline: 1px dashed color-mix(in oklab, var(--color-accent) 45%, transparent);
+  outline-offset: 3px;
+  border-radius: 3px;
+  cursor: text;
+  transition: outline-color 120ms ease, background-color 120ms ease;
+}
+body[data-edit-mode="on"] [data-editable]:hover {
+  outline: 1px solid var(--color-accent);
+  background-color: color-mix(in oklab, var(--color-accent) 6%, transparent);
+}
+body[data-edit-mode="on"] [data-editable][data-empty="true"]::after {
+  content: attr(data-label);
+  display: inline-block;
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  background: var(--color-accent-soft);
+  border: 1px dashed var(--color-accent-line);
+  border-radius: 4px;
+  padding: 0.1em 0.5em;
+  line-height: 1.6;
+}
+body[data-edit-mode="on"] { padding-bottom: 3.5rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

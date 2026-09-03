@@ -1,0 +1,110 @@
+import Link from "next/link";
+import { sql } from "@/lib/db";
+import { PageHeader, Card, CardHead, EmptyState, formatThaiDateTime } from "@/components/admin/ui";
+
+const COUNTS = [
+  { table: "news", label: "ข่าวสาร", href: "/admin/news" },
+  { table: "activities", label: "กิจกรรม", href: "/admin/activities" },
+  { table: "committee_members", label: "กรรมการ", href: "/admin/committee" },
+  { table: "documents", label: "เอกสาร", href: "/admin/documents" },
+] as const;
+
+const ACTION_LABEL: Record<string, string> = {
+  create: "เพิ่ม", update: "แก้ไข", delete: "ลบ", duplicate: "ทำสำเนา",
+  reorder: "จัดลำดับ", status: "เปลี่ยนสถานะ",
+};
+
+export default async function DashboardPage() {
+  const [counts, newSubmissions, submissionTotal, recentAudit] = await Promise.all([
+    Promise.all(
+      COUNTS.map(async (c) => {
+        const [row] = await sql<{ n: number }[]>`select count(*)::int as n from ${sql(c.table)}`;
+        return { ...c, n: row?.n ?? 0 };
+      }),
+    ),
+    sql<{ id: string; kind: string; name: string; subject: string; created_at: string }[]>`
+      select id, kind, name, subject, created_at from submissions
+      where status = 'new' order by created_at desc limit 5`,
+    sql<{ n: number }[]>`select count(*)::int as n from submissions where status = 'new'`,
+    sql<{ id: number; actor_email: string; action: string; entity: string; entity_id: string; created_at: string }[]>`
+      select id, actor_email, action, entity, entity_id, created_at
+      from audit_log order by created_at desc limit 8`,
+  ]);
+
+  return (
+    <div>
+      <PageHeader title="แดชบอร์ด" description="ภาพรวมเนื้อหาและกิจกรรมล่าสุดของเว็บไซต์" />
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {counts.map((c) => (
+          <Link
+            key={c.table}
+            href={c.href}
+            className="rounded-xl border border-line bg-paper p-5 transition-colors hover:border-ink/25"
+          >
+            <p className="text-2xl font-semibold">{c.n.toLocaleString("th-TH")}</p>
+            <p className="mt-1 text-sm text-muted">{c.label}</p>
+          </Link>
+        ))}
+        <Link
+          href="/admin/submissions"
+          className="rounded-xl border border-line bg-paper p-5 transition-colors hover:border-ink/25"
+        >
+          <p className="text-2xl font-semibold text-accent">{submissionTotal[0]?.n ?? 0}</p>
+          <p className="mt-1 text-sm text-muted">ข้อความใหม่</p>
+        </Link>
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHead
+            title="ข้อความใหม่"
+            actions={
+              <Link href="/admin/submissions" className="text-xs font-medium text-accent hover:underline">
+                ดูทั้งหมด
+              </Link>
+            }
+          />
+          {newSubmissions.length === 0 ? (
+            <EmptyState title="ยังไม่มีข้อความใหม่" className="border-0" />
+          ) : (
+            <ul className="divide-y divide-line-soft">
+              {newSubmissions.map((s) => (
+                <li key={s.id} className="px-5 py-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="truncate text-sm font-medium">{s.name || "(ไม่ระบุชื่อ)"}</p>
+                    <span className="shrink-0 text-xs text-faint">{formatThaiDateTime(s.created_at)}</span>
+                  </div>
+                  <p className="truncate text-[13px] text-muted">{s.subject || s.kind}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+
+        <Card>
+          <CardHead title="ประวัติการแก้ไขล่าสุด" actions={
+            <Link href="/admin/audit" className="text-xs font-medium text-accent hover:underline">
+              ดูทั้งหมด
+            </Link>
+          } />
+          {recentAudit.length === 0 ? (
+            <EmptyState title="ยังไม่มีการแก้ไข" className="border-0" />
+          ) : (
+            <ul className="divide-y divide-line-soft">
+              {recentAudit.map((a) => (
+                <li key={a.id} className="px-5 py-3 text-[13px]">
+                  <span className="font-medium">{a.actor_email}</span>{" "}
+                  <span className="text-muted">
+                    {ACTION_LABEL[a.action] ?? a.action} {a.entity}
+                  </span>
+                  <span className="float-right text-xs text-faint">{formatThaiDateTime(a.created_at)}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
+    </div>
+  );
+}
