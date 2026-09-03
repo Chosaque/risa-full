@@ -15,6 +15,7 @@ string, image and list on the public pages without a developer.
 | Auth | `jose` sessions in an httpOnly cookie, `bcryptjs` password hashes |
 | Editor | TipTap for rich text, Radix UI primitives, `lucide-react` icons |
 | Map | MapLibre GL with plain OpenStreetMap raster tiles — no API key |
+| Uploads | Local disk in dev; [Vercel Blob](https://vercel.com/docs/vercel-blob) when deployed (see **Uploads** below) |
 
 Locale lives in the URL (`/th/...`, `/en/...`). `src/proxy.ts` redirects bare
 paths to the visitor's locale and sets an `x-risa-locale` header, which is how
@@ -115,23 +116,35 @@ renders a plain element and ships no client JavaScript.
 
 ## Uploads
 
-`src/lib/storage.ts` writes uploads to `public/uploads/<yyyy-mm>/` on the local
-disk and returns a `/uploads/...` URL. **This does not survive on serverless
-hosts** — Vercel and similar platforms give each deployment an ephemeral
-filesystem, so files uploaded in production would disappear on the next deploy.
-Deploy to a host with a persistent volume, or swap the storage adapter (below)
-before going live on serverless.
+`src/lib/storage.ts` picks its backend at runtime by whether
+`BLOB_READ_WRITE_TOKEN` is set:
 
-## Moving to Supabase
+- **Unset** (local dev by default) — writes to `public/uploads/<yyyy-mm>/` on
+  local disk and returns a `/uploads/...` URL. Fine for development, but
+  **does not survive on serverless hosts** — Vercel gives each deployment an
+  ephemeral filesystem, so files written this way in production vanish on the
+  next deploy.
+- **Set** — uploads go to [Vercel Blob](https://vercel.com/docs/vercel-blob)
+  instead, and every URL stored in the `media` table becomes an absolute Blob
+  CDN URL. Nothing else in the app changes — every reader treats `url` as an
+  opaque string either way.
+
+To exercise Blob locally: add Blob storage to the linked Vercel project, then
+`vercel env pull .env.local` to fetch the token. In production on Vercel, the
+token is provisioned automatically once Blob storage is attached to the
+project — no manual configuration needed.
+
+## Moving to Supabase (database)
 
 The migrations in `supabase/migrations/` are plain SQL and apply unchanged.
 
-1. Run them against the Supabase project (`supabase db push`, or `psql` with the
-   project connection string).
+1. Run them against the Supabase project (`supabase db push`, or `pnpm
+   db:migrate` with `DATABASE_URL` pointed at the project's connection
+   string).
 2. Point `DATABASE_URL` at the Supabase connection string. Use the pooled
-   connection for serverless runtimes.
+   connection for serverless runtimes. `postgres.js` reads `sslmode` from the
+   URL itself, so no extra SSL configuration is needed.
 3. Run `pnpm db:seed` once to populate `content_blocks` and create the admin
    user.
-4. Replace the body of `putObject` in `src/lib/storage.ts` with a Supabase
-   Storage upload and return the public URL. That function is the only place in
-   the app that touches the filesystem, so nothing else changes.
+
+File storage is independent of this — see **Uploads** above.

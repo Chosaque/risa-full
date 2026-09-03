@@ -16,8 +16,18 @@ const nextConfig: NextConfig = {
       {
         // Uploaded assets are content-addressed by a random suffix, so they can
         // be cached hard — a replacement always gets a new URL.
+        //
+        // Uploads accept image/svg+xml, and an SVG is executable markup: a
+        // malicious upload could embed a <script> that runs when the file is
+        // opened directly (same-origin document navigation), even though it
+        // is inert when only embedded via <img>. The sandbox directive makes
+        // the browser treat a direct visit as an opaque, scriptless origin —
+        // <img>-embedded display elsewhere on the site is unaffected.
         source: "/uploads/:path*",
-        headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+          { key: "Content-Security-Policy", value: "sandbox" },
+        ],
       },
     ];
   },

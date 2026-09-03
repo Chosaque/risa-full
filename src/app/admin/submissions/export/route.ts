@@ -4,8 +4,15 @@ import { getCurrentUser } from "@/lib/auth";
 
 const KINDS = new Set(["contact", "membership", "job"]);
 
+/**
+ * `name`, `subject`, `notes` and `payload` here come from anonymous public
+ * form submissions. A leading `=`, `+`, `-`, `@`, tab, or CR makes Excel/
+ * Sheets read the cell as a formula — a classic CSV-injection vector — so a
+ * neutralising apostrophe goes in front of any cell that starts with one.
+ */
 function csvCell(value: unknown): string {
-  const s = value === null || value === undefined ? "" : String(value);
+  let s = value === null || value === undefined ? "" : String(value);
+  if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
