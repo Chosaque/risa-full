@@ -15,6 +15,10 @@ export const sql =
     max: 10,
     idle_timeout: 20,
     transform: { undefined: null },
+    // Supabase's Supavisor transaction-mode pooler (port 6543) does not
+    // support prepared statements — each connection can be handed to a
+    // different backend between queries.
+    prepare: false,
   });
 
 if (process.env.NODE_ENV !== "production") global.__risa_sql = sql;
