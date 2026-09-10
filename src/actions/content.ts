@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { sql } from "@/lib/db";
-import { audit, requireUser, setEditMode } from "@/lib/auth";
+import { audit, requireUser } from "@/lib/auth";
 import { sanitizeHtml } from "@/lib/utils";
 
 export type ActionResult = { ok: true } | { ok: false; error: string };
@@ -33,16 +33,5 @@ export async function saveContentBlock(
     return { ok: true };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Save failed" };
-  }
-}
-
-export async function toggleEditMode(on: boolean): Promise<ActionResult> {
-  try {
-    await requireUser();
-    await setEditMode(on);
-    revalidatePath("/", "layout");
-    return { ok: true };
-  } catch {
-    return { ok: false, error: "Not signed in" };
   }
 }

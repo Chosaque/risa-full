@@ -1,11 +1,9 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getContentMap, blockValue, getSettings } from "@/lib/content";
-import { getCurrentUser, isEditMode } from "@/lib/auth";
 import { isLocale } from "@/lib/i18n";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { EditBar } from "@/components/editable/EditBar";
 
 export async function generateStaticParams() {
   return [{ locale: "th" }, { locale: "en" }];
@@ -31,9 +29,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const [settings, user, editing] = await Promise.all([
-    getSettings(), getCurrentUser(), isEditMode(),
-  ]);
+  const settings = await getSettings();
 
   return (
     <div
@@ -51,13 +47,6 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
         {children}
       </main>
       <Footer />
-      {user && (
-        <EditBar
-          email={user.email}
-          editing={editing}
-          adminHref="/admin"
-        />
-      )}
     </div>
   );
 }

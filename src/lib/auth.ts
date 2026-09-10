@@ -102,15 +102,6 @@ export async function isEditMode(): Promise<boolean> {
   return (await getCurrentUser()) !== null;
 }
 
-export async function setEditMode(on: boolean) {
-  const jar = await cookies();
-  if (on) {
-    jar.set(EDIT_COOKIE, "1", { sameSite: "lax", path: "/", maxAge: MAX_AGE });
-  } else {
-    jar.delete(EDIT_COOKIE);
-  }
-}
-
 export async function audit(
   actorEmail: string,
   action: string,
