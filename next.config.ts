@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  // Default is 60s. The database is a Supabase pooler in ap-northeast-1;
+  // Vercel builds run in iad1, so cross-region query latency under
+  // concurrent static generation can exceed the default budget.
+  staticPageGenerationTimeout: 180,
   async headers() {
     return [
       {
