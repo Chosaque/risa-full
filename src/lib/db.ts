@@ -37,13 +37,22 @@ const QUERY_TIMEOUT_MS = 15_000;
  */
 export const sql = new Proxy(rawSql, {
   apply(target, thisArg, args) {
-    const result = Reflect.apply(target, thisArg, args) as Promise<unknown>;
+    const result = Reflect.apply(target, thisArg, args);
+    // sql(identifier) / sql(row, ...cols) — postgres.js's dynamic-value
+    // helpers, used nested inside a real tagged call (e.g. `${sql(table)}`).
+    // These return an Identifier/Builder, not a Query, and aren't awaitable
+    // — postgres.js itself throws if you try. Only a genuine tagged-template
+    // call (args[0].raw is an array) produces the Query we want to guard.
+    const isTaggedCall = Array.isArray((args[0] as { raw?: unknown })?.raw);
+    if (!isTaggedCall) return result;
+
+    const query = result as Promise<unknown>;
     return new Promise((resolve, reject) => {
       const timer = setTimeout(
         () => reject(new Error(`Database query timed out after ${QUERY_TIMEOUT_MS}ms`)),
         QUERY_TIMEOUT_MS,
       );
-      result.then(
+      query.then(
         (value) => { clearTimeout(timer); resolve(value); },
         (err) => { clearTimeout(timer); reject(err); },
       );
