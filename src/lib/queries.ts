@@ -51,6 +51,7 @@ export type TimelineEvent = {
 };
 
 export type ResearchItem = {
+  cover_url?: string;
   id: string; title_th: string; title_en: string; authors: string;
   venue_th: string; venue_en: string; abstract_th: string; abstract_en: string;
   year: number; doi: string; pdf_url: string; tags: string[];

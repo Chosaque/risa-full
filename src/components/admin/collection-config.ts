@@ -221,6 +221,7 @@ const research: CollectionConfig = {
   fields: [
     { name: "title", label: "ชื่อผลงาน", type: "text", bilingual: true, required: true },
     { name: "authors", label: "ผู้แต่ง", type: "text", help: "คั่นชื่อด้วยเครื่องหมายจุลภาค" },
+    { name: "cover_url", label: "รูปภาพงานวิจัย", type: "image", help: "อัปโหลดหรือเลือกภาพสำหรับผลงานนี้ หากไม่ใส่ภาพจะแสดงเฉพาะข้อความ" },
     { name: "venue", label: "แหล่งเผยแพร่", type: "text", bilingual: true },
     { name: "abstract", label: "บทคัดย่อ", type: "textarea", bilingual: true },
     { name: "year", label: "ปีที่เผยแพร่", type: "number" },

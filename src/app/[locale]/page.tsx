@@ -45,7 +45,7 @@ export default async function HomePage() {
       <section className="container-page minimal-features" aria-label={locale === "th" ? "สำรวจ RISA" : "Explore RISA"}>
         {features.map((feature) => (
           <div className="minimal-feature" key={feature.href}>
-            {feature.href === "/research" ? <EditableImage k="home.features.research_image" fallbackSrc="/precision-research.png" className="minimal-feature-editable-image" alt={th ? "งานวิจัย" : "Research"} /> : feature.href === "/about" ? <EditableImage k="home.features.about_image" fallbackSrc="/precision-research.png" className="minimal-feature-editable-image" alt={th ? "เกี่ยวกับ RISA" : "About RISA"} /> : <div className="minimal-feature-image" style={{ backgroundImage: "url('/images/msic-2026/student-presentation.jpg')", backgroundSize: "cover", backgroundPosition: "center", filter: "none" }} aria-hidden />}
+            {feature.href === "/research" ? <EditableImage k="home.features.research_image" hideWhenEmpty className="minimal-feature-editable-image" alt={th ? "งานวิจัย" : "Research"} /> : feature.href === "/about" ? <EditableImage k="home.features.about_image" hideWhenEmpty className="minimal-feature-editable-image" alt={th ? "เกี่ยวกับ RISA" : "About RISA"} /> : <div className="minimal-feature-image" style={{ backgroundImage: "url('/images/msic-2026/student-presentation.jpg')", backgroundSize: "cover", backgroundPosition: "center", filter: "none" }} aria-hidden />}
             <Link href={L(feature.href)}>
             <div className="minimal-feature-heading"><span>{feature.number}</span><h2>{locale === "th" ? feature.th : feature.en}</h2><ArrowRight size={18} aria-hidden /></div>
             <p>{locale === "th" ? feature.subTh : feature.subEn}</p>

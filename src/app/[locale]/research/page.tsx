@@ -53,6 +53,10 @@ export default async function ResearchPage() {
                 <ul className="border-t border-line lg:col-span-10">
                   {list.map((item) => (
                     <li key={item.id} className="border-b border-line py-6">
+                      {item.cover_url && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={item.cover_url} alt={pick(item, "title", locale)} className="mb-5 max-h-96 w-full object-contain object-left" loading="lazy" />
+                      )}
                       <h3 className="text-[17px] font-semibold leading-snug">
                         {pick(item, "title", locale)}
                       </h3>

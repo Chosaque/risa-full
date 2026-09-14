@@ -52,7 +52,7 @@
 .minimal-hero-image img { height: 100%; object-position: 72% center; }
 .minimal-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; padding-block: 56px 64px; }
 .minimal-feature { display: block; min-width: 0; }
-.minimal-feature-image { height: 180px; background-image: url('/precision-research.png'); background-size: 160%; filter: grayscale(.7); transition: filter .25s; }
+.minimal-feature-image { height: 180px; background-size: cover; }
 .minimal-feature:nth-child(2) .minimal-feature-image { background-size: 235%; }
 .minimal-feature:nth-child(3) .minimal-feature-image { background-size: 195%; }
 .minimal-feature:hover .minimal-feature-image { filter: grayscale(0); }
