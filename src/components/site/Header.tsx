@@ -41,7 +41,7 @@ export async function Header() {
           <img
             src={settings.logo_url || "/risa-wordmark.png"}
             alt="RISA"
-            className="h-6 w-auto shrink-0 md:h-7"
+            className="h-10 w-auto max-w-[140px] shrink-0 object-contain md:h-14 md:max-w-[180px]"
           />
           <span className="hidden min-w-0 border-l border-line pl-3 text-[11px] leading-tight text-muted min-[1440px]:block">
             <span className="line-clamp-2 max-w-[15rem]">{orgName}</span>
