@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+.minimal-feature-editable-image { height: 180px; }
+.minimal-feature-editable-image img { width: 100%; height: 100%; object-fit: cover; }
+@media (min-width: 641px) and (max-width: 900px) { .minimal-feature-editable-image { height: 150px; } }
+
 .minimal-news-cover { display: block; min-height: 590px; }
 .minimal-news-cover img { width: 100%; height: 100%; object-fit: cover; }
 .minimal-news-panel { min-height: 590px; padding: 56px; background: #102b3c; color: #faf9f6; display: flex; flex-direction: column; justify-content: space-between; }

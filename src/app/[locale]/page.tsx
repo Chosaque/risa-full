@@ -5,6 +5,7 @@ import { getLocale } from "@/lib/request";
 import { localePath, pick } from "@/lib/i18n";
 import { getNews, getUpcomingActivities } from "@/lib/queries";
 import { Editable } from "@/components/editable/Editable";
+import { EditableImage } from "@/components/editable/EditableImage";
 
 export default async function HomePage() {
   const [locale, news, activities] = await Promise.all([
@@ -43,11 +44,13 @@ export default async function HomePage() {
       </section>
       <section className="container-page minimal-features" aria-label={locale === "th" ? "สำรวจ RISA" : "Explore RISA"}>
         {features.map((feature) => (
-          <Link className="minimal-feature" href={L(feature.href)} key={feature.href}>
-            <div className="minimal-feature-image" style={feature.href === "/activities" ? { backgroundImage: "url('/images/msic-2026/student-presentation.jpg')", backgroundSize: "cover", backgroundPosition: "center", filter: "none" } : { backgroundPosition: feature.position }} aria-hidden />
+          <div className="minimal-feature" key={feature.href}>
+            {feature.href === "/research" ? <EditableImage k="home.features.research_image" fallbackSrc="/precision-research.png" className="minimal-feature-editable-image" alt={th ? "งานวิจัย" : "Research"} /> : feature.href === "/about" ? <EditableImage k="home.features.about_image" fallbackSrc="/precision-research.png" className="minimal-feature-editable-image" alt={th ? "เกี่ยวกับ RISA" : "About RISA"} /> : <div className="minimal-feature-image" style={{ backgroundImage: "url('/images/msic-2026/student-presentation.jpg')", backgroundSize: "cover", backgroundPosition: "center", filter: "none" }} aria-hidden />}
+            <Link href={L(feature.href)}>
             <div className="minimal-feature-heading"><span>{feature.number}</span><h2>{locale === "th" ? feature.th : feature.en}</h2><ArrowRight size={18} aria-hidden /></div>
             <p>{locale === "th" ? feature.subTh : feature.subEn}</p>
-          </Link>
+            </Link>
+          </div>
         ))}
       </section>
       <section className="container-page minimal-updates">
