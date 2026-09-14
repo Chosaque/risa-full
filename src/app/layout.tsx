@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Thai } from "next/font/google";
+import { Noto_Sans_Thai_Looped } from "next/font/google";
 import { Toaster } from "sonner";
 import { getLocale } from "@/lib/request";
 import "./globals.css";
 
-const plexThai = IBM_Plex_Sans_Thai({
-  variable: "--font-plex-thai",
+const notoThaiLooped = Noto_Sans_Thai_Looped({
+  variable: "--font-noto-thai-looped",
   subsets: ["thai", "latin"],
   weight: ["300", "400", "500", "600", "700"],
   display: "swap",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: LayoutProps<"/">) {
   const locale = await getLocale();
   return (
-    <html lang={locale} className={`${plexThai.variable} h-full`} suppressHydrationWarning>
+    <html lang={locale} className={`${notoThaiLooped.variable} h-full`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col antialiased">
         {children}
         <Toaster position="bottom-center" richColors closeButton />
