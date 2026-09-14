@@ -33,6 +33,6 @@ export async function POST(request: Request) {
     values (${stored.url}, ${stored.path}, ${stored.filename}, ${file.type}, ${stored.size})
     returning id, url`;
 
-  await audit(user.email, "create", "media", row.id, null, stored);
+  await audit(user.username, "create", "media", row.id, null, stored);
   return NextResponse.json({ ...stored, id: row.id, mime: file.type });
 }

@@ -25,10 +25,10 @@ export async function saveContentBlock(
 
     await sql`
       update content_blocks
-      set value_th = ${th}, value_en = ${en}, updated_by = ${user.email}
+      set value_th = ${th}, value_en = ${en}, updated_by = ${user.username}
       where key = ${key}`;
 
-    await audit(user.email, "update", "content_blocks", key, before, { value_th: th, value_en: en });
+    await audit(user.username, "update", "content_blocks", key, before, { value_th: th, value_en: en });
     revalidatePath("/", "layout");
     return { ok: true };
   } catch (e) {

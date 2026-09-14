@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/admin/ui";
 import { UsersScreen } from "@/components/admin/UsersScreen";
 
 type User = {
-  id: string; email: string; name: string; role: "admin" | "editor";
+  id: string; username: string; name: string; role: "admin" | "editor";
   created_at: string; last_login_at: string | null;
 };
 
@@ -15,7 +15,7 @@ export default async function UsersPage() {
   if (me.role !== "admin") redirect("/admin");
 
   const users = await sql<User[]>`
-    select id, email, name, role, created_at, last_login_at
+    select id, username, name, role, created_at, last_login_at
     from admin_users order by created_at asc`;
 
   return (

@@ -23,7 +23,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/admin"
         </Link>
         <div className="ml-auto flex items-center gap-3">
           <div className="text-right leading-tight">
-            <p className="text-[13px] font-medium">{user.name || user.email}</p>
+            <p className="text-[13px] font-medium">{user.name || user.username}</p>
             <p className="text-[11px] text-faint">{user.role === "admin" ? "ผู้ดูแลระบบ" : "ผู้แก้ไข"}</p>
           </div>
           <form action={logoutAction}>

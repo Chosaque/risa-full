@@ -44,7 +44,7 @@ pnpm dev
 ```
 
 `pnpm db:seed` creates the admin account and **prints the generated password
-once** — copy it before the terminal scrolls away. Set `ADMIN_EMAIL` /
+once** — copy it before the terminal scrolls away. Set `ADMIN_USERNAME` /
 `ADMIN_PASSWORD` in the environment to choose them yourself instead. If an admin
 user already exists the seed leaves it alone.
 

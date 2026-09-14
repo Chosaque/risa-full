@@ -48,7 +48,7 @@ export async function updateSettings(values: unknown): Promise<ActionResult> {
     const [before] = await sql`select * from settings where id = true`;
     await sql`update settings set ${sql(parsed.data)} where id = true`;
 
-    await audit(user.email, "update", "settings", "singleton", before, parsed.data);
+    await audit(user.username, "update", "settings", "singleton", before, parsed.data);
     revalidateSite();
     return { ok: true };
   } catch (e) {
@@ -77,7 +77,7 @@ export async function createNavItem(values: unknown): Promise<ActionResult<{ id:
       values (${data.label_th}, ${data.label_en}, ${data.href}, ${data.new_tab ?? false},
               ${data.parent_id ?? null}, ${data.status ?? "published"}, ${n})
       returning id`;
-    await audit(user.email, "create", "nav_items", row.id, null, data);
+    await audit(user.username, "create", "nav_items", row.id, null, data);
     revalidateSite();
     return { ok: true, data: { id: row.id } };
   } catch (e) {
@@ -92,7 +92,7 @@ export async function updateNavItem(id: string, values: unknown): Promise<Action
     const [before] = await sql`select * from nav_items where id = ${id}`;
     if (!before) return { ok: false, error: "ไม่พบเมนูนี้" };
     await sql`update nav_items set ${sql(data)} where id = ${id}`;
-    await audit(user.email, "update", "nav_items", id, before, data);
+    await audit(user.username, "update", "nav_items", id, before, data);
     revalidateSite();
     return { ok: true };
   } catch (e) {
@@ -106,7 +106,7 @@ export async function deleteNavItem(id: string): Promise<ActionResult> {
     const [before] = await sql`select * from nav_items where id = ${id}`;
     if (!before) return { ok: false, error: "ไม่พบเมนูนี้" };
     await sql`delete from nav_items where id = ${id}`;
-    await audit(user.email, "delete", "nav_items", id, before, null);
+    await audit(user.username, "delete", "nav_items", id, before, null);
     revalidateSite();
     return { ok: true };
   } catch (e) {
@@ -132,7 +132,7 @@ export async function reorderNavItem(
         await tx`update nav_items set sort = ${k} where id = ${order[k]}`;
       }
     });
-    await audit(user.email, "reorder", "nav_items", id, null, { direction });
+    await audit(user.username, "reorder", "nav_items", id, null, { direction });
     revalidateSite();
     return { ok: true };
   } catch (e) {
@@ -158,7 +158,7 @@ export async function createFooterLink(values: unknown): Promise<ActionResult<{ 
       values (${data.column_key}, ${data.label_th}, ${data.label_en}, ${data.href},
               ${data.new_tab ?? false}, ${data.status ?? "published"}, ${n})
       returning id`;
-    await audit(user.email, "create", "footer_links", row.id, null, data);
+    await audit(user.username, "create", "footer_links", row.id, null, data);
     revalidateSite();
     return { ok: true, data: { id: row.id } };
   } catch (e) {
@@ -173,7 +173,7 @@ export async function updateFooterLink(id: string, values: unknown): Promise<Act
     const [before] = await sql`select * from footer_links where id = ${id}`;
     if (!before) return { ok: false, error: "ไม่พบลิงก์นี้" };
     await sql`update footer_links set ${sql(data)} where id = ${id}`;
-    await audit(user.email, "update", "footer_links", id, before, data);
+    await audit(user.username, "update", "footer_links", id, before, data);
     revalidateSite();
     return { ok: true };
   } catch (e) {
@@ -187,7 +187,7 @@ export async function deleteFooterLink(id: string): Promise<ActionResult> {
     const [before] = await sql`select * from footer_links where id = ${id}`;
     if (!before) return { ok: false, error: "ไม่พบลิงก์นี้" };
     await sql`delete from footer_links where id = ${id}`;
-    await audit(user.email, "delete", "footer_links", id, before, null);
+    await audit(user.username, "delete", "footer_links", id, before, null);
     revalidateSite();
     return { ok: true };
   } catch (e) {
@@ -212,7 +212,7 @@ export async function reorderFooterLink(
         await tx`update footer_links set sort = ${k} where id = ${order[k]}`;
       }
     });
-    await audit(user.email, "reorder", "footer_links", id, null, { direction });
+    await audit(user.username, "reorder", "footer_links", id, null, { direction });
     revalidateSite();
     return { ok: true };
   } catch (e) {
@@ -234,7 +234,7 @@ export async function updateSubmission(
     if (values.notes !== undefined) patch.notes = values.notes;
     if (Object.keys(patch).length === 0) return { ok: true };
     await sql`update submissions set ${sql(patch)} where id = ${id}`;
-    await audit(user.email, "update", "submissions", id, { status: before.status }, patch);
+    await audit(user.username, "update", "submissions", id, { status: before.status }, patch);
     revalidatePath("/admin/submissions");
     return { ok: true };
   } catch (e) {
@@ -245,7 +245,7 @@ export async function updateSubmission(
 // ── admin users ──────────────────────────────────────────────────────────
 
 const UserSchema = z.object({
-  email: z.string().email("อีเมลไม่ถูกต้อง"),
+  username: z.string().trim().toLowerCase().regex(/^[a-z0-9][a-z0-9_-]{2,31}$/, "ชื่อผู้ใช้ต้องมี 3–32 ตัวอักษร ใช้ a-z, 0-9, _ หรือ - ได้"),
   name: z.string().min(1, "กรุณากรอกชื่อ"),
   role: z.enum(["admin", "editor"]),
   password: z.string().min(8, "รหัสผ่านอย่างน้อย 8 ตัวอักษร"),
@@ -255,15 +255,15 @@ export async function createAdminUser(values: unknown): Promise<ActionResult<{ i
   try {
     const user = await requireAdmin();
     const data = UserSchema.parse(values);
-    const existing = await sql`select id from admin_users where email = ${data.email.toLowerCase()}`;
+    const existing = await sql`select id from admin_users where username = ${data.username}`;
     if (existing.length > 0) return { ok: false, error: "มีบัญชีนี้อยู่แล้ว" };
 
     const hash = await hashPassword(data.password);
     const [row] = await sql<{ id: string }[]>`
-      insert into admin_users (email, name, role, password_hash)
-      values (${data.email.toLowerCase()}, ${data.name}, ${data.role}, ${hash})
+      insert into admin_users (username, name, role, password_hash)
+      values (${data.username}, ${data.name}, ${data.role}, ${hash})
       returning id`;
-    await audit(user.email, "create", "admin_users", row.id, null, { email: data.email, role: data.role });
+    await audit(user.username, "create", "admin_users", row.id, null, { username: data.username, role: data.role });
     revalidatePath("/admin/users");
     return { ok: true, data: { id: row.id } };
   } catch (e) {
@@ -281,14 +281,14 @@ async function adminCount(excludeId?: string): Promise<number> {
 export async function updateAdminUserRole(id: string, role: "admin" | "editor"): Promise<ActionResult> {
   try {
     const actor = await requireAdmin();
-    const [target] = await sql<{ email: string; role: string }[]>`
-      select email, role from admin_users where id = ${id}`;
+    const [target] = await sql<{ username: string; role: string }[]>`
+      select username, role from admin_users where id = ${id}`;
     if (!target) return { ok: false, error: "ไม่พบผู้ใช้นี้" };
     if (target.role === "admin" && role === "editor" && (await adminCount(id)) === 0) {
       return { ok: false, error: "ต้องมีผู้ดูแลระบบอย่างน้อย 1 คนเสมอ" };
     }
     await sql`update admin_users set role = ${role} where id = ${id}`;
-    await audit(actor.email, "update", "admin_users", id, { role: target.role }, { role });
+    await audit(actor.username, "update", "admin_users", id, { role: target.role }, { role });
     revalidatePath("/admin/users");
     return { ok: true };
   } catch (e) {
@@ -300,11 +300,11 @@ export async function resetAdminUserPassword(id: string, password: string): Prom
   try {
     const actor = await requireAdmin();
     if (password.length < 8) return { ok: false, error: "รหัสผ่านอย่างน้อย 8 ตัวอักษร" };
-    const [target] = await sql`select email from admin_users where id = ${id}`;
+    const [target] = await sql`select username from admin_users where id = ${id}`;
     if (!target) return { ok: false, error: "ไม่พบผู้ใช้นี้" };
     const hash = await hashPassword(password);
     await sql`update admin_users set password_hash = ${hash} where id = ${id}`;
-    await audit(actor.email, "update", "admin_users", id, null, { action: "reset_password" });
+    await audit(actor.username, "update", "admin_users", id, null, { action: "reset_password" });
     return { ok: true };
   } catch (e) {
     return { ok: false, error: message(e) };
@@ -315,14 +315,14 @@ export async function deleteAdminUser(id: string): Promise<ActionResult> {
   try {
     const actor = await requireAdmin();
     if (actor.id === id) return { ok: false, error: "ไม่สามารถลบบัญชีของตัวเองได้" };
-    const [target] = await sql<{ email: string; role: string }[]>`
-      select email, role from admin_users where id = ${id}`;
+    const [target] = await sql<{ username: string; role: string }[]>`
+      select username, role from admin_users where id = ${id}`;
     if (!target) return { ok: false, error: "ไม่พบผู้ใช้นี้" };
     if (target.role === "admin" && (await adminCount(id)) === 0) {
       return { ok: false, error: "ต้องมีผู้ดูแลระบบอย่างน้อย 1 คนเสมอ" };
     }
     await sql`delete from admin_users where id = ${id}`;
-    await audit(actor.email, "delete", "admin_users", id, target, null);
+    await audit(actor.username, "delete", "admin_users", id, target, null);
     revalidatePath("/admin/users");
     return { ok: true };
   } catch (e) {

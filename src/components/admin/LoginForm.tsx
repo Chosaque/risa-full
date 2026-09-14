@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { Loader2, Lock, Mail } from "lucide-react";
+import { Loader2, Lock, UserRound } from "lucide-react";
 import { loginAction, type LoginState } from "@/actions/auth";
 import { Field, Input } from "@/components/ui/field";
 
@@ -11,10 +11,10 @@ export function LoginForm({ next }: { next: string }) {
   return (
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="next" value={next} />
-      <Field label="อีเมล" required>
+      <Field label="ชื่อผู้ใช้" required>
         <div className="relative">
-          <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
-          <Input name="email" aria-label="อีเมล" type="email" required autoComplete="username" autoFocus className="pl-9" />
+          <UserRound className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
+          <Input name="username" aria-label="ชื่อผู้ใช้" required autoComplete="username" autoCapitalize="none" spellCheck={false} autoFocus className="pl-9" placeholder="smartlab" />
         </div>
       </Field>
       <Field label="รหัสผ่าน" required>
