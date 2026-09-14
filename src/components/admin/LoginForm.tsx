@@ -14,13 +14,13 @@ export function LoginForm({ next }: { next: string }) {
       <Field label="อีเมล" required>
         <div className="relative">
           <Mail className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
-          <Input name="email" type="email" required autoComplete="username" autoFocus className="pl-9" />
+          <Input name="email" aria-label="อีเมล" type="email" required autoComplete="username" autoFocus className="pl-9" />
         </div>
       </Field>
       <Field label="รหัสผ่าน" required>
         <div className="relative">
           <Lock className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
-          <Input name="password" type="password" required autoComplete="current-password" className="pl-9" />
+          <Input name="password" aria-label="รหัสผ่าน" type="password" required autoComplete="current-password" className="pl-9" />
         </div>
       </Field>
 

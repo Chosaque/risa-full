@@ -6,6 +6,7 @@ import { ImagePlus, Loader2, Search, Trash2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { cn, formatBytes } from "@/lib/utils";
 import { Button } from "./button";
+import { UPLOAD_SIZE_HINT, validateUploadSize } from "@/lib/upload-limits";
 
 export type MediaItem = {
   id: string; url: string; filename: string; mime: string; size_bytes: number | null;
@@ -48,6 +49,7 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
     if (!files?.length) return;
     setUploading(true);
     try {
+      Array.from(files).forEach(validateUploadSize);
       for (const file of Array.from(files)) {
         const body = new FormData();
         body.append("file", file);
@@ -76,8 +78,9 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[90] bg-ink/40 backdrop-blur-[2px]" />
         <Dialog.Content className="fixed left-1/2 top-1/2 z-[91] flex max-h-[85vh] w-[min(56rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-2xl">
-          <header className="flex items-center gap-3 border-b border-line px-5 py-3.5">
+          <header className="flex flex-wrap items-center gap-3 border-b border-line px-5 py-3.5">
             <Dialog.Title className="text-sm font-semibold">คลังไฟล์ / Media library</Dialog.Title>
+            <Dialog.Description className="sr-only">เลือกรูปภาพหรือเอกสาร · {UPLOAD_SIZE_HINT}</Dialog.Description>
             <div className="relative ml-auto">
               <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-faint" />
               <input
@@ -106,6 +109,7 @@ export function MediaPickerDialog({ open, onOpenChange, onSelect, kind = "image"
           </header>
 
           <div className="min-h-0 flex-1 overflow-y-auto p-5">
+            <p className="mb-4 text-xs text-muted">{UPLOAD_SIZE_HINT}</p>
             {loading ? (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 md:grid-cols-5">
                 {Array.from({ length: 10 }).map((_, i) => (

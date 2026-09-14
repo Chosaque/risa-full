@@ -1,0 +1,43 @@
+/* Include body-hosted editor dialogs in the same theme while an admin route is mounted. */
+body:has(.risa-admin) {
+  --color-ink: #102b3c;
+  --color-ink-2: #344b58;
+  --color-paper: #faf9f6;
+  --color-surface: #f0efeb;
+  --color-surface-2: #e9e7e0;
+  --color-muted: #616a70;
+  --color-faint: #747a7b;
+  --color-line: #dadbd7;
+  --color-line-soft: #e9e8e2;
+  --color-accent: #796332;
+  --color-accent-ink: #fff;
+  --color-accent-soft: #eeeadf;
+  --color-accent-line: #c9bea5;
+}
+.risa-admin .admin-page-header { border-bottom: 1px solid var(--color-line); padding-bottom: 28px; margin-bottom: 32px; }
+.risa-admin .admin-page-header h1 { font-size: clamp(1.65rem, 3vw, 2.25rem); font-weight: 400; }
+.risa-admin .admin-card { border-radius: 4px; background: #fff; }
+.risa-admin .admin-rail { background: #102b3c; color: #f5f4f0; --color-faint: #aebbbc; --color-muted: #c0c9cb; --color-ink-2: #cbd4d7; --color-ink: #fff; --color-surface: #1d3949; --color-accent-soft: #284352; --color-accent: #e5d1a2; --color-line: #35505f; --color-line-soft: #35505f; }
+.risa-admin .admin-rail img { filter: grayscale(1) brightness(0) invert(1); }
+.admin-kicker { font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--color-accent); }
+.admin-quick-link { display: flex; align-items: center; gap: 18px; padding: 25px 22px; border: 1px solid var(--color-line); background: #fff; transition: border-color .2s, background .2s; }
+.admin-quick-link:hover { border-color: var(--color-accent); background: #f6f3eb; }
+.admin-quick-link > svg:first-child { color: var(--color-accent); flex-shrink: 0; }
+.admin-quick-link > svg:last-child { margin-left: auto; flex-shrink: 0; }
+.admin-quick-link p { color: var(--color-muted); font-size: 13px; margin-top: 3px; }
+.admin-metric { border-top: 1px solid var(--color-line); padding: 22px 0; }
+.admin-metric:hover { border-color: var(--color-accent); }
+.admin-metric strong { font-size: 32px; font-weight: 400; }
+.admin-login { min-height: 100svh; display: grid; grid-template-columns: 1fr 1fr; }
+.admin-login-intro { display: flex; flex-direction: column; justify-content: space-between; padding: clamp(32px, 6vw, 88px); background: #102b3c; color: #faf9f6; }
+.admin-login-intro h2 { max-width: 440px; font-size: clamp(30px, 3.4vw, 48px); font-weight: 300; margin-block: 28px; }
+.admin-login-intro p { color: #b9c6cd; max-width: 380px; }
+.admin-login-form { display: flex; align-items: center; justify-content: center; padding: 48px 28px; }
+@media (max-width: 767px) {
+  .admin-login { grid-template-columns: 1fr; }
+  .admin-login-intro { padding: 28px; gap: 36px; }
+  .admin-login-intro h2 { font-size: 28px; margin-block: 12px; }
+  .admin-login-intro > p:last-child { display: none; }
+  .admin-login-form { padding: 36px 24px 48px; }
+  .risa-admin .admin-page-header { padding-bottom: 20px; margin-bottom: 24px; }
+}

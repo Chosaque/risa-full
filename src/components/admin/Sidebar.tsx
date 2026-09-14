@@ -59,7 +59,7 @@ export function Sidebar() {
   );
 
   const lockup = (
-    <Link href="/admin" className="flex items-center gap-2 px-5 py-4">
+    <Link href="/admin" className="flex flex-col items-start gap-3 px-6 py-7">
       <Image
         src="/risa-lockup.png"
         alt="RISA"
@@ -68,6 +68,7 @@ export function Sidebar() {
         className="h-7 w-auto"
         priority
       />
+      <span className="text-[10px] tracking-[.2em] text-faint">CONTENT STUDIO</span>
       <span className="sr-only">ไปยังแดชบอร์ด</span>
     </Link>
   );
@@ -92,7 +93,7 @@ export function Sidebar() {
       </button>
 
       {/* desktop rail */}
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-line bg-paper lg:flex">
+      <aside className="admin-rail fixed inset-y-0 left-0 z-30 hidden w-60 flex-col border-r border-line lg:flex">
         {lockup}
         {nav}
       </aside>
@@ -106,7 +107,7 @@ export function Sidebar() {
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-ink/40"
           />
-          <div className="absolute inset-y-0 left-0 flex w-64 flex-col bg-paper shadow-xl">
+          <div className="admin-rail absolute inset-y-0 left-0 flex w-64 flex-col shadow-xl">
             <div className="flex items-center justify-between border-b border-line-soft">
               {lockup}
               <button

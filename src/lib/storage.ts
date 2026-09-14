@@ -3,6 +3,7 @@ import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import crypto from "node:crypto";
 import { put, del } from "@vercel/blob";
+import { MAX_UPLOAD_BYTES } from "./upload-limits";
 
 /**
  * Storage adapter with two backends, chosen at runtime by whether a Blob
@@ -32,7 +33,11 @@ export const ALLOWED_DOC = [
   "text/csv",
   "application/zip",
 ];
-export const MAX_BYTES = 12 * 1024 * 1024;
+export const MAX_BYTES = MAX_UPLOAD_BYTES;
+
+export function uploadsConfigured(): boolean {
+  return blobEnabled() || !process.env.VERCEL;
+}
 
 export type StoredObject = { url: string; path: string; filename: string; size: number };
 
@@ -49,6 +54,7 @@ function safeName(file: File): { base: string; ext: string; stamp: string } {
 }
 
 export async function putObject(file: File): Promise<StoredObject> {
+  if (!uploadsConfigured()) throw new Error("UPLOAD_STORAGE_NOT_CONFIGURED");
   const { base, ext, stamp } = safeName(file);
   const name = `${base}-${crypto.randomBytes(4).toString("hex")}${ext}`;
   const key = `${stamp}/${name}`;
