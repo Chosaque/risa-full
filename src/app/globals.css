@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+.msic-feature { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center; padding-block: 24px 64px; }
+.msic-feature-photo img { width: 100%; height: auto; }
+.msic-feature-copy h2 { font-size: clamp(1.6rem, 2.4vw, 2.4rem); font-weight: 400; }
+.msic-feature-copy > p:not(.minimal-eyebrow) { margin-top: 20px; color: #616a70; }
+.msic-feature-copy > a { display: inline-flex; gap: 28px; border-bottom: 1px solid #9b8450; padding-bottom: 6px; margin-top: 24px; }
+.msic-story { padding-block: 40px 80px; }
+.msic-back { font-size: 14px; color: #616a70; }
+.msic-story header { max-width: 800px; padding-block: 48px 40px; }
+.msic-story h1 { font-size: clamp(2rem, 4vw, 3.6rem); font-weight: 400; }
+.msic-summary { margin-top: 24px; color: #616a70; }
+.msic-story figure img { width: 100%; height: auto; }
+.msic-story figcaption { padding-top: 12px; color: #616a70; font-size: 14px; }
+.msic-gallery { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 28px; margin-top: 48px; }
+.msic-gallery figure:last-child { grid-column: 1 / -1; }
+@media (max-width: 640px) {
+  .msic-feature { grid-template-columns: 1fr; gap: 24px; padding-bottom: 40px; }
+  .msic-gallery { grid-template-columns: 1fr; gap: 28px; margin-top: 32px; }
+  .msic-story header { padding-block: 32px; }
+}
+
 /* Public-site visual system. Admin screens retain their own theme. */
 .risa-public { background: var(--color-paper); color: var(--color-ink); }
 .risa-public .container-page { max-width: 1360px; }

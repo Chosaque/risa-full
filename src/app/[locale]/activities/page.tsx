@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MsicFeature } from "@/components/site/MsicFeature";
 import { content } from "@/lib/content";
 import { getLocale } from "@/lib/request";
 import { t } from "@/lib/i18n";
@@ -6,7 +7,6 @@ import { getActivities } from "@/lib/queries";
 import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
 import { ActivityCard } from "@/components/site/Cards";
-import { EmptyState } from "@/components/site/EmptyState";
 import { CtaBand } from "@/components/site/CtaBand";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -32,9 +32,8 @@ export default async function ActivitiesPage() {
       />
 
       <Section>
-        {all.length === 0 ? (
-          <EmptyState label={t(locale, "noResults")} />
-        ) : (
+        <MsicFeature locale={locale} />
+        {all.length > 0 && (
           <div className="space-y-14">
             {[
               { label: t(locale, "upcoming"), items: upcoming },
