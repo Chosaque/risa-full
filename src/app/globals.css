@@ -1,5 +1,16 @@
 @import "tailwindcss";
 
+.minimal-news-cover { display: block; min-height: 590px; }
+.minimal-news-cover img { width: 100%; height: 100%; object-fit: cover; }
+.minimal-news-panel { min-height: 590px; padding: 56px; background: #102b3c; color: #faf9f6; display: flex; flex-direction: column; justify-content: space-between; }
+.minimal-news-panel .minimal-eyebrow { color: #c0c9cb; }
+.minimal-news-word { font-size: clamp(4rem, 8vw, 8rem); font-weight: 300; letter-spacing: -.04em; }
+.minimal-news-panel a { display: inline-flex; gap: 24px; align-items: center; align-self: flex-start; border-bottom: 1px solid #9b8450; padding-bottom: 8px; }
+@media (max-width: 640px) {
+  .minimal-news-cover { min-height: 0; height: 280px; }
+  .minimal-news-panel { min-height: 280px; padding: 28px 20px; }
+}
+
 .msic-feature { display: grid; grid-template-columns: 1.2fr 1fr; gap: 48px; align-items: center; padding-block: 24px 64px; }
 .msic-feature-photo img { width: 100%; height: auto; }
 .msic-feature-copy h2 { font-size: clamp(1.6rem, 2.4vw, 2.4rem); font-weight: 400; }

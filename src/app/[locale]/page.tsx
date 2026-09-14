@@ -1,19 +1,18 @@
 import Link from "next/link";
 import { MsicFeature } from "@/components/site/MsicFeature";
 import { ArrowRight } from "lucide-react";
-import { getContentMap, blockValue } from "@/lib/content";
 import { getLocale } from "@/lib/request";
 import { localePath, pick } from "@/lib/i18n";
 import { getNews, getUpcomingActivities } from "@/lib/queries";
 import { Editable } from "@/components/editable/Editable";
-import { EditableImage } from "@/components/editable/EditableImage";
 
 export default async function HomePage() {
-  const [locale, map, news, activities] = await Promise.all([
-    getLocale(), getContentMap(), getNews(3), getUpcomingActivities(2),
+  const [locale, news, activities] = await Promise.all([
+    getLocale(), getNews(3), getUpcomingActivities(2),
   ]);
   const L = (href: string) => href.startsWith("/") ? localePath(locale, href) : href;
-  const v = (key: string) => blockValue(map.get(key), locale);
+  const featured = news[0];
+  const th = locale === "th";
   const features = [
     { href: "/research", number: "01", th: "งานวิจัย", en: "Research", subTh: "องค์ความรู้และผลงานวิจัย", subEn: "Knowledge and research publications", position: "right center" },
     { href: "/about", number: "02", th: "เกี่ยวกับ RISA", en: "About RISA", subTh: "รู้จักสมาคมและพันธกิจของเรา", subEn: "Our association and our purpose", position: "center center" },
@@ -23,15 +22,24 @@ export default async function HomePage() {
     <div className="minimal-home">
       <section className="minimal-hero">
         <div className="minimal-hero-copy">
-          <Editable k="home.hero.eyebrow" as="p" className="minimal-eyebrow" />
-          <Editable k="home.hero.title" as="h1" multiline />
-          <Editable k="home.hero.subtitle" as="p" className="minimal-intro" />
-          <Link href={L(v("home.hero.primary_href") || "/about")} className="minimal-hero-link">
+          <p className="minimal-eyebrow">{th ? "ข่าวสารล่าสุด · RISA" : "LATEST NEWS · RISA"}</p>
+          <h1>{featured ? pick(featured, "title", locale) : th ? "ข่าวสารจาก RISA" : "News from RISA"}</h1>
+          <p className="minimal-intro">{featured ? pick(featured, "excerpt", locale) : th ? "ติดตามข่าวสารและความเคลื่อนไหวของสมาคมได้เร็ว ๆ นี้" : "Association news and updates are coming soon."}</p>
+          {featured?.published_at && <p className="minimal-news-date mt-5"><time dateTime={featured.published_at}>{new Intl.DateTimeFormat(th ? "th-TH" : "en-GB", { day: "numeric", month: "long", year: "numeric" }).format(new Date(featured.published_at))}</time></p>}
+          <Link href={L(featured ? `/news/${featured.slug}` : "/news")} className="minimal-hero-link">
             <span className="minimal-circle"><ArrowRight size={22} aria-hidden /></span>
-            <Editable k="home.hero.primary_label" />
+            <span>{featured ? (th ? "อ่านข่าวต่อ" : "Read the story") : (th ? "ดูข่าวทั้งหมด" : "View all news")}</span>
           </Link>
         </div>
-        <EditableImage k="home.hero.image" fallbackSrc="/precision-research.png" priority className="minimal-hero-image" alt={locale === "th" ? "ภาพประกอบเครื่องมือวัดความละเอียดสูง" : "Illustration of precision measurement equipment"} />
+        {featured?.cover_url ? <Link href={L(`/news/${featured.slug}`)} className="minimal-news-cover">
+          {/* The admin media library accepts external image URLs. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={featured.cover_url} alt={pick(featured, "title", locale)} fetchPriority="high" />
+        </Link> : <div className="minimal-news-panel">
+          <p className="minimal-eyebrow">{th ? "ข่าวและความเคลื่อนไหว" : "NEWS & UPDATES"}</p>
+          <span className="minimal-news-word" aria-hidden>{th ? "ข่าวสาร" : "News"}</span>
+          <Link href={L("/news")}>{th ? "ดูข่าวทั้งหมด" : "View all news"} <ArrowRight size={20} aria-hidden /></Link>
+        </div>}
       </section>
       <section className="container-page minimal-features" aria-label={locale === "th" ? "สำรวจ RISA" : "Explore RISA"}>
         {features.map((feature) => (
