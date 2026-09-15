@@ -13,6 +13,8 @@ import { slugify } from "@/lib/utils";
 import type { CollectionConfig, FieldDef, Row } from "./collection-config";
 import { Card, CardHead } from "./ui";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { StaffCard } from "@/components/site/StaffCard";
+import type { StaffProfile } from "@/lib/staff";
 
 type Props = {
   config: CollectionConfig;
@@ -38,6 +40,7 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [mediaField, setMediaField] = useState<string | null>(null);
   const [iconField, setIconField] = useState<string | null>(null);
+  const [previewLocale, setPreviewLocale] = useState<"th" | "en">("th");
   const router = useRouter();
 
   const titleSources = useMemo(
@@ -241,6 +244,16 @@ export function CollectionForm({ config, initial, scope, backHref, createdHref }
 
   return (
     <form onSubmit={onSubmit} className="space-y-5 pb-16">
+      {config.key === "team" && <Card>
+        <CardHead title="ตัวอย่างกรอบรูปและข้อมูลบนเว็บไซต์" />
+        <div className="p-5">
+          <div className="mb-4 flex gap-2" aria-label="ภาษาตัวอย่าง">
+            {(["th", "en"] as const).map(lang => <button key={lang} type="button" aria-pressed={previewLocale === lang} onClick={() => setPreviewLocale(lang)} className="rounded border border-line px-3 py-1.5 text-sm aria-pressed:bg-accent aria-pressed:text-accent-ink">{lang === "th" ? "ไทย" : "English"}</button>)}
+          </div>
+          <div className="max-w-xs"><StaffCard preview locale={previewLocale} member={Object.fromEntries(["name_th", "name_en", "position_th", "position_en", "department_th", "department_en", "bio_th", "bio_en", "photo_url", "photo_position", "email", "phone"].map(key => [key, String(values[key] ?? "")])) as StaffProfile} /></div>
+          {values.photo_url ? <button type="button" onClick={() => set("photo_url", "")} className="mt-3 text-sm text-muted underline">เอารูปออกจากโปรไฟล์ (ไฟล์ยังอยู่ในคลัง)</button> : null}
+        </div>
+      </Card>}
       <Card>
         <CardHead title="รายละเอียด" />
         <div className="grid gap-5 p-5">

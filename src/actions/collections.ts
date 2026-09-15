@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { sql } from "@/lib/db";
 import { audit, requireUser } from "@/lib/auth";
 import { sanitizeHtml, slugify } from "@/lib/utils";
+import { validateStaff } from "@/lib/staff";
 import {
   columnKinds,
   getCollection,
@@ -138,6 +139,11 @@ export async function createRow(
     const config = getCollection(key);
     const payload = sanitizeValues(config, values);
 
+    if (key === "team") {
+      const error = validateStaff(payload);
+      if (error) return { ok: false, error };
+    }
+
     if (config.scopeColumn && !payload[config.scopeColumn]) {
       return { ok: false, error: "ไม่พบกลุ่มของรายการที่จะเพิ่ม" };
     }
@@ -178,6 +184,10 @@ export async function updateRow(
     if (!before) return { ok: false, error: "ไม่พบรายการที่ต้องการแก้ไข" };
 
     const payload = sanitizeValues(config, values);
+    if (key === "team") {
+      const error = validateStaff({ ...before, ...payload });
+      if (error) return { ok: false, error };
+    }
     await ensureSlug(config, payload, id);
     if (config.hasStatus) {
       const status = readStatus(values);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronDown, Home, Menu, X } from "lucide-react";
@@ -107,7 +108,7 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
         <Menu className="size-5" />
       </button>
 
-      {open && (
+      {open && createPortal(
         <div className="fixed inset-0 z-[70] lg:hidden">
           <button
             aria-label="ปิดเมนู"
@@ -188,7 +189,7 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
               </Link>
             </nav>
           </div>
-        </div>
+        </div>, document.body
       )}
     </>
   );

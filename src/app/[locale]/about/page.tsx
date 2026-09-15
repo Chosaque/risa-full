@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { content } from "@/lib/content";
 import { getLocale } from "@/lib/request";
 import { Editable, EditableRich } from "@/components/editable/Editable";
@@ -16,10 +17,16 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
+  const locale = await getLocale();
 
   return (
     <>
       <Section>
+        <nav aria-label={locale === "th" ? "เกี่ยวกับสมาคม" : "About the association"} className="mb-10 flex flex-wrap gap-6 border-b border-line text-sm">
+          <Link href={`/${locale}/about`} aria-current="page" className="border-b-2 border-accent pb-3 text-ink">{locale === "th" ? "เกี่ยวกับสมาคม" : "About RISA"}</Link>
+          <Link href={`/${locale}/committee`} className="pb-3 text-muted hover:text-ink">{locale === "th" ? "คณะกรรมการ" : "Committee"}</Link>
+          <Link href={`/${locale}/team`} className="pb-3 text-muted hover:text-ink">{locale === "th" ? "บุคลากร" : "Our Team"}</Link>
+        </nav>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
             <Editable

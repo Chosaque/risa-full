@@ -11,6 +11,7 @@ const STATIC_ROUTES = [
   "",
   "/about",
   "/committee",
+  "/team",
   "/news",
   "/activities",
   "/membership",
