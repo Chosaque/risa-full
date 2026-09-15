@@ -1,0 +1,39 @@
+.normalNav { position: sticky; top: 0; z-index: 60; }
+.homeNav { position: fixed; inset: 0 0 auto; z-index: 60; opacity: 0; visibility: hidden; transition: opacity 180ms ease; }
+.homeNav[data-visible="true"] { opacity: 1; visibility: visible; }
+.homeNav header > div, .normalNav header > div { min-height: 80px; }
+.stage { --open: 0; height: 185svh; position: relative; }
+.scene { position: sticky; top: 0; height: 100svh; overflow: hidden; isolation: isolate; background: #faf9f6; }
+.backdrop { position: absolute; inset: 0; background: #25352c; }
+.backdrop > img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.backdrop::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(8 20 20 / 10%), rgb(8 20 20 / 72%)); }
+.caption { position: absolute; inset: auto 8% 12%; z-index: 1; color: white; }
+.caption p { font-size: 11px; letter-spacing: .22em; margin-bottom: 24px; }
+.caption h1 { font-size: clamp(32px, 4.7vw, 70px); line-height: 1.35; font-weight: 400; letter-spacing: -.03em; }
+.caption a { display: inline-flex; gap: 32px; margin-top: 28px; padding-block: 10px; border-bottom: 1px solid #ffffff80; }
+.panel { position: absolute; top: 0; bottom: 0; width: 50.1%; z-index: 2; background: #faf9f6; will-change: transform; }
+.left { left: 0; transform: translateX(calc(var(--open) * -101%)); }
+.right { right: 0; transform: translateX(calc(var(--open) * 101%)); }
+.logo { position: absolute; z-index: 4; width: min(78vw, 860px); left: max(11vw, calc((100vw - 860px) / 2)); top: 28%; height: auto; background: #faf9f6; padding: 12px; pointer-events: none; opacity: clamp(0, calc((1 - var(--open)) * 20), 1); will-change: width, top, left; }
+.stage[data-open="true"] .invitation, .stage[data-open="true"] .skip { visibility: hidden; pointer-events: none; }
+.invitation { position: absolute; z-index: 3; top: 64%; left: 0; width: 100%; text-align: center; color: #6d664e; opacity: clamp(0, calc(1 - var(--open) * 4), 1); visibility: visible; }
+.invitation p { font-size: 11px; letter-spacing: .18em; margin-bottom: 22px; }
+.invitation button { display: inline-flex; flex-direction: column; align-items: center; gap: 20px; font-size: 10px; letter-spacing: .2em; cursor: pointer; padding: 16px 32px; }
+.invitation button span { display: block; font-size: 24px; }
+.skip { position: absolute; z-index: 5; right: 28px; bottom: 24px; color: #736b57; background: #faf9f6; border: 1px solid #ddd8cb; padding: 8px 14px; border-radius: 2px; font-size: 12px; cursor: pointer; }
+.stage:focus-within .skip { outline-offset: 4px; }
+@media (max-width: 640px) {
+  .stage { height: 160svh; }
+  .homeNav header > div, .normalNav header > div { min-height: 68px; }
+  .panel { width: 100%; height: 50.1%; bottom: auto; }
+  .left { transform: translateY(calc(var(--open) * -101%)); }
+  .right { top: auto; bottom: 0; transform: translateY(calc(var(--open) * 101%)); }
+  .invitation { top: 58%; }
+  .caption { bottom: 15%; }
+  .caption p { font-size: 9px; letter-spacing: .14em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stage { height: 100svh; }
+  .homeNav { opacity: 1; visibility: visible; transition: none; }
+  .panel, .logo, .invitation, .skip { display: none; }
+}
