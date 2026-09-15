@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
+import { MmsArchiveCards } from '@/components/site/MmsArchiveCards';
 import { ExternalLink, FileText } from "lucide-react";
 import { content } from "@/lib/content";
 import { getLocale } from "@/lib/request";
-import { pick, t } from "@/lib/i18n";
+import { pick } from "@/lib/i18n";
 import { getResearch, type ResearchItem } from "@/lib/queries";
 import { PageHero } from "@/components/site/PageHero";
 import { Section } from "@/components/site/Section";
-import { EmptyState } from "@/components/site/EmptyState";
 import { CtaBand } from "@/components/site/CtaBand";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -41,8 +41,9 @@ export default async function ResearchPage() {
       />
 
       <Section>
+        <MmsArchiveCards locale={locale} categories={['5']} />
         {items.length === 0 ? (
-          <EmptyState label={t(locale, "noResults")} />
+          null
         ) : (
           <div className="space-y-14">
             {years.map(([year, list]) => (

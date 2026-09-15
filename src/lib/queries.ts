@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { sql } from "./db";
+import { mmsNews } from './mms-import';
 
 type Status = { status: string };
 
@@ -99,15 +100,16 @@ export type Partner = { id: string; name: string; logo_url: string; url: string 
 
 // ── public reads (published only) ──────────────────────────────────────────
 
-export const getNews = cache(async (limit = 50, offset = 0) =>
-  sql<News[]>`select * from news where status = 'published'
-              order by published_at desc, created_at desc limit ${limit} offset ${offset}`);
+export const getNews = cache(async (limit = 50, offset = 0) => {
+  const own = await sql<News[]>`select * from news where status = 'published' order by published_at desc, created_at desc`;
+  return [...own, ...mmsNews.filter(r=>!own.some(n=>n.slug===r.slug))].sort((a,b)=>(Date.parse(b.published_at)||0)-(Date.parse(a.published_at)||0)).slice(offset,offset+limit);
+});
 
 export const countNews = cache(async () =>
-  (await sql<{ n: number }[]>`select count(*)::int as n from news where status = 'published'`)[0].n);
+  (await getNews(Number.MAX_SAFE_INTEGER)).length);
 
 export const getNewsBySlug = cache(async (slug: string) =>
-  (await sql<News[]>`select * from news where slug = ${slug} and status = 'published' limit 1`)[0]);
+  (await sql<News[]>`select * from news where slug = ${slug} and status = 'published' limit 1`)[0] ?? mmsNews.find(r=>r.slug===slug));
 
 export const getActivities = cache(async (limit = 50, offset = 0) =>
   sql<Activity[]>`select * from activities where status = 'published'

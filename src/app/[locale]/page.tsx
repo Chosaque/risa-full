@@ -55,6 +55,7 @@ export default async function HomePage() {
       </section>
       <section className="container-page minimal-updates">
         <MsicFeature locale={locale} />
+        <Link href={L('/mms-hub')} className="mb-10 block border-y border-line py-5">MMS Hub · {th?'คลังข่าว กิจกรรม งานวิจัย และเครือข่าย':'News, events, research and network archive'} ↗</Link>
         <div className="minimal-updates-heading"><Editable k="home.news.title" as="h2" /><Link href={L("/news")}><Editable k="home.news.link_label" /> <ArrowRight size={16} aria-hidden /></Link></div>
         {news.length ? <div className="minimal-news-list">{news.map(item => <Link key={item.id} href={L(`/news/${item.slug}`)} className="minimal-news-item"><span className="minimal-news-date">{item.published_at ? new Intl.DateTimeFormat(locale === "th" ? "th-TH" : "en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(item.published_at)) : ""}</span><h3>{pick(item, "title", locale)}</h3><ArrowRight size={18} aria-hidden /></Link>)}</div> : <p className="text-muted">{locale === "th" ? "ติดตามข่าวสารจาก RISA ได้เร็ว ๆ นี้" : "Updates from RISA are coming soon."}</p>}
         {activities.length > 0 && <div className="minimal-activities"><Link href={L("/activities")} className="minimal-activity-label"><Editable k="home.activities.title" /></Link>{activities.map(item => <Link key={item.id} href={L(`/activities/${item.slug}`)}>{pick(item, "title", locale)} <ArrowRight size={16} aria-hidden /></Link>)}</div>}

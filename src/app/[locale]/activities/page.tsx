@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { MmsArchiveCards } from '@/components/site/MmsArchiveCards';
 import { MsicFeature } from "@/components/site/MsicFeature";
 import { content } from "@/lib/content";
 import { getLocale } from "@/lib/request";
@@ -33,6 +34,7 @@ export default async function ActivitiesPage() {
 
       <Section>
         <MsicFeature locale={locale} />
+        <MmsArchiveCards locale={locale} categories={['2']} />
         {all.length > 0 && (
           <div className="space-y-14">
             {[
