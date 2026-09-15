@@ -63,11 +63,15 @@ export function CurtainEntrance({ children, locale }: { children: ReactNode; loc
       <div className={styles.scene}>
         <div className={styles.backdrop} data-backdrop>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/images/msic-2026/student-presentation.jpg" alt="" fetchPriority="high" />
+          <img src="/images/placeholders/about-risa.jpg" alt="" fetchPriority="high" />
           <div className={styles.caption}>
-            <p>RESEARCH · INDUSTRY · STANDARDS</p>
-            <h1>{th ? <>เชื่อมงานวิจัย<br />สู่อนาคตอุตสาหกรรม</> : <>Connecting research.<br />Advancing industry.</>}</h1>
-            <a href="#main">{th ? "สำรวจ RISA" : "Explore RISA"} <span aria-hidden>↓</span></a>
+            <h1>{th ? "เกี่ยวกับเรา" : "About RISA"}</h1>
+            {/* Mission summary: Royal Gazette registration notice, 26 May 2026, pp. 23–25.
+                https://ratchakitcha.soc.go.th/documents/111990.pdf */}
+            <p className={styles.aboutCopy}>{th
+              ? "RISA คือสมาคมส่งเสริมการวิจัยและมาตรฐานทางอุตสาหกรรม เราส่งเสริมนักวิจัยและผู้ประกอบการให้ต่อยอดเทคโนโลยีและนวัตกรรม ผ่านคำปรึกษาจากผู้เชี่ยวชาญ การเตรียมความพร้อมด้านมาตรฐาน และเครือข่ายความร่วมมือ เพื่อการใช้ประโยชน์เชิงพาณิชย์และสาธารณประโยชน์"
+              : "RISA is a Thai association supporting researchers and entrepreneurs in developing technology and innovation. Our mission brings together expert advice, industrial standards readiness and collaborative networks to advance innovations for commercial and public benefit."}</p>
+            <a href={`/${locale}/about`}>{th ? "รู้จักสมาคมเพิ่มเติม" : "Learn more about us"} <span aria-hidden>↗</span></a>
           </div>
         </div>
         <div className={`${styles.panel} ${styles.left}`} aria-hidden />
