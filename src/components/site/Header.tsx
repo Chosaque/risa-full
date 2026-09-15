@@ -36,7 +36,7 @@ export async function Header() {
         {t(locale, "skipToContent")}
       </a>
       <div className="container-page flex h-16 items-center gap-3">
-        <Link href={L("/")} className="flex min-w-0 shrink-0 items-center gap-3" aria-label={orgName}>
+        <Link href={L("/")} scroll={false} className="flex min-w-0 shrink-0 items-center gap-3" aria-label={orgName}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={settings.logo_url || "/risa-wordmark.png"}
