@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowUpRight, FilePenLine, ImagePlus, Plus } from "lucide-react";
 import { sql } from "@/lib/db";
 import { PageHeader, Card, CardHead, EmptyState, formatThaiDateTime } from "@/components/admin/ui";
 
@@ -33,24 +34,37 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <PageHeader title="แดชบอร์ด" description="ภาพรวมเนื้อหาและกิจกรรมล่าสุดของเว็บไซต์" />
+      <p className="admin-kicker mb-4">RISA / CONTENT STUDIO</p>
+      <PageHeader title="พื้นที่จัดการเว็บไซต์" description="แบ่งปันข่าวสาร อัปเดตกิจกรรม และดูแลทุกเรื่องราวของ RISA" />
+
+      <div className="mb-10 grid gap-4 xl:grid-cols-3">
+        <Link href="/admin/news/new" className="admin-quick-link">
+          <Plus className="size-6" /><div><h2 className="text-base font-medium">เขียนข่าวใหม่</h2><p>เพิ่มหัวข้อ เนื้อหา และภาพประกอบ</p></div><ArrowUpRight className="size-4" />
+        </Link>
+        <Link href="/admin/media" className="admin-quick-link">
+          <ImagePlus className="size-6" /><div><h2 className="text-base font-medium">อัปโหลดไฟล์</h2><p>เก็บรูปภาพและเอกสารไว้พร้อมใช้งาน</p></div><ArrowUpRight className="size-4" />
+        </Link>
+        <Link href="/admin/pages" className="admin-quick-link">
+          <FilePenLine className="size-6" /><div><h2 className="text-base font-medium">แก้ไขหน้าเว็บไซต์</h2><p>ปรับข้อความและรูปภาพในแต่ละหน้า</p></div><ArrowUpRight className="size-4" />
+        </Link>
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {counts.map((c) => (
           <Link
             key={c.table}
             href={c.href}
-            className="rounded-xl border border-line bg-paper p-5 transition-colors hover:border-ink/25"
+            className="admin-metric"
           >
-            <p className="text-2xl font-semibold">{c.n.toLocaleString("th-TH")}</p>
+            <strong>{c.n.toLocaleString("th-TH")}</strong>
             <p className="mt-1 text-sm text-muted">{c.label}</p>
           </Link>
         ))}
         <Link
           href="/admin/submissions"
-          className="rounded-xl border border-line bg-paper p-5 transition-colors hover:border-ink/25"
+          className="admin-metric"
         >
-          <p className="text-2xl font-semibold text-accent">{submissionTotal[0]?.n ?? 0}</p>
+          <strong className="text-accent">{submissionTotal[0]?.n ?? 0}</strong>
           <p className="mt-1 text-sm text-muted">ข้อความใหม่</p>
         </Link>
       </div>

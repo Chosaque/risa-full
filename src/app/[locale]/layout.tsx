@@ -29,16 +29,19 @@ export default async function LocaleLayout({ children, params }: LayoutProps<"/[
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
 
-  const settings = await getSettings();
-
   return (
     <div
       lang={locale}
-      className="flex min-h-full flex-col"
+      className="risa-public flex min-h-full flex-col"
       style={
         {
-          "--color-accent": settings.color_accent,
-          "--color-ink": settings.color_ink,
+          "--color-accent": "#796332",
+          "--color-ink": "#102b3c",
+          "--color-ink-2": "#344b58",
+          "--color-paper": "#faf9f6",
+          "--color-surface": "#f0efeb",
+          "--color-muted": "#616a70",
+          "--color-line": "#dadbd7",
         } as React.CSSProperties
       }
     >

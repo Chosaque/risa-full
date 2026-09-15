@@ -10,7 +10,7 @@ const MAX_AGE = 60 * 60 * 24 * 7;
 
 export type AdminUser = {
   id: string;
-  email: string;
+  username: string;
   name: string;
   role: "admin" | "editor";
 };
@@ -25,10 +25,10 @@ export async function hashPassword(plain: string) {
   return bcrypt.hash(plain, 12);
 }
 
-export async function verifyLogin(email: string, password: string): Promise<AdminUser | null> {
+export async function verifyLogin(username: string, password: string): Promise<AdminUser | null> {
   const rows = await sql<
-    { id: string; email: string; name: string; role: "admin" | "editor"; password_hash: string }[]
-  >`select id, email, name, role, password_hash from admin_users where email = ${email.toLowerCase().trim()} limit 1`;
+    { id: string; username: string; name: string; role: "admin" | "editor"; password_hash: string }[]
+  >`select id, username, name, role, password_hash from admin_users where username = ${username.toLowerCase().trim()} limit 1`;
   const user = rows[0];
   if (!user) {
     // Constant-ish work so a missing account is not obviously faster than a wrong password.
@@ -37,11 +37,11 @@ export async function verifyLogin(email: string, password: string): Promise<Admi
   }
   if (!(await bcrypt.compare(password, user.password_hash))) return null;
   await sql`update admin_users set last_login_at = now() where id = ${user.id}`;
-  return { id: user.id, email: user.email, name: user.name, role: user.role };
+  return { id: user.id, username: user.username, name: user.name, role: user.role };
 }
 
 export async function createSession(user: AdminUser) {
-  const token = await new SignJWT({ email: user.email, name: user.name, role: user.role })
+  const token = await new SignJWT({ username: user.username, name: user.name, role: user.role })
     .setProtectedHeader({ alg: "HS256" })
     .setSubject(user.id)
     .setIssuedAt()
@@ -73,7 +73,9 @@ export async function getCurrentUser(): Promise<AdminUser | null> {
     const { payload } = await jwtVerify(token, secret());
     return {
       id: String(payload.sub),
-      email: String(payload.email ?? ""),
+      // Sessions issued before usernames were introduced remain usable until
+      // they expire, then the user signs in again with their username.
+      username: String(payload.username ?? payload.email ?? ""),
       name: String(payload.name ?? ""),
       role: payload.role === "admin" ? "admin" : "editor",
     };

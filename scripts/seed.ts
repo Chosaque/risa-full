@@ -401,13 +401,13 @@ async function seedAdmin() {
     console.log("  admin_users: already present, left untouched");
     return;
   }
-  const email = process.env.ADMIN_EMAIL ?? "admin@risa.or.th";
+  const username = (process.env.ADMIN_USERNAME ?? "smartlab").toLowerCase();
   const password = process.env.ADMIN_PASSWORD ?? crypto.randomBytes(9).toString("base64url");
-  await sql`insert into admin_users (email, password_hash, name, role)
-            values (${email}, ${await bcrypt.hash(password, 12)}, 'ผู้ดูแลระบบ', 'admin')`;
+  await sql`insert into admin_users (username, password_hash, name, role)
+            values (${username}, ${await bcrypt.hash(password, 12)}, 'ผู้ดูแลระบบ', 'admin')`;
   console.log("\n  ┌──────────────────────────────────────────────");
   console.log("  │  ADMIN ACCOUNT CREATED — save these now");
-  console.log(`  │  email:    ${email}`);
+  console.log(`  │  username: ${username}`);
   console.log(`  │  password: ${password}`);
   console.log("  │  Change the password from /admin/users.");
   console.log("  └──────────────────────────────────────────────\n");

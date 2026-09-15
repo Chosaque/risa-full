@@ -12,7 +12,7 @@ export function PageHeader({
   actions?: React.ReactNode;
 }) {
   return (
-    <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
+    <header className="admin-page-header mb-6 flex flex-wrap items-start justify-between gap-4">
       <div className="min-w-0">
         <h1 className="text-xl font-semibold tracking-[-0.01em]">{title}</h1>
         {description && <p className="mt-1 max-w-2xl text-[13px] text-muted">{description}</p>}
@@ -30,7 +30,7 @@ export function Card({
   children: React.ReactNode;
 }) {
   return (
-    <section className={cn("rounded-xl border border-line bg-paper", className)}>{children}</section>
+    <section className={cn("admin-card rounded-xl border border-line bg-paper", className)}>{children}</section>
   );
 }
 

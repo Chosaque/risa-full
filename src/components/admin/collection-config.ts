@@ -203,6 +203,29 @@ const committee: CollectionConfig = {
   ],
 };
 
+const team: CollectionConfig = {
+  key: "team", table: "staff_members", label: "บุคลากร", singular: "บุคลากร",
+  adminPath: "/admin/team", hasStatus: true, hasSort: true, titleField: "name",
+  searchColumns: ["name", "position", "department", "email", "phone"],
+  columns: [
+    { name: "photo_url", label: "รูปถ่าย", kind: "image" },
+    { name: "name", label: "ชื่อ-นามสกุล", bilingual: true },
+    { name: "position", label: "ตำแหน่ง", bilingual: true },
+    { name: "email", label: "อีเมล", className: "hidden lg:table-cell" },
+  ],
+  fields: [
+    { name: "name", label: "ชื่อ-นามสกุล", type: "text", bilingual: true, required: true, help: "หากไม่ใส่ภาษาอังกฤษ จะใช้ชื่อภาษาไทยแทน" },
+    { name: "position", label: "ตำแหน่ง", type: "text", bilingual: true },
+    { name: "department", label: "ฝ่าย / หน่วยงาน", type: "text", bilingual: true },
+    { name: "photo_url", label: "รูปถ่ายบุคลากร", type: "image", help: "อัปโหลดรูปแนวตั้ง JPG, PNG หรือ WebP ไม่เกิน 4 MB ระบบใส่กรอบให้เอง" },
+    { name: "photo_position", label: "ตำแหน่งภาพในกรอบ", type: "select", options: [{ value: "top", label: "เน้นด้านบน / ใบหน้า" }, { value: "center", label: "กึ่งกลาง" }, { value: "bottom", label: "ด้านล่าง" }] },
+    { name: "email", label: "อีเมลสำหรับติดต่อ (เปิดเผยบนเว็บไซต์)", type: "text", placeholder: "name@example.org", help: "เว้นว่างได้ ใช้อีเมลที่อนุญาตให้เผยแพร่เท่านั้น" },
+    { name: "phone", label: "เบอร์โทรสำหรับติดต่อ (เปิดเผยบนเว็บไซต์)", type: "text", placeholder: "+66 2 000 0000", help: "เว้นว่างได้ ใช้เบอร์ติดต่อสำหรับงานที่อนุญาตให้เผยแพร่" },
+    { name: "bio", label: "แนะนำตัวโดยย่อ", type: "textarea", bilingual: true },
+    { name: "status", label: "การแสดงผล", type: "select", options: STATUS_OPTIONS, help: "ฉบับร่าง = ยังไม่แสดงบนเว็บ / เผยแพร่ = แสดงรูปและข้อมูลติดต่อให้ทุกคนเห็น" },
+  ],
+};
+
 const research: CollectionConfig = {
   key: "research",
   table: "research_items",
@@ -221,6 +244,7 @@ const research: CollectionConfig = {
   fields: [
     { name: "title", label: "ชื่อผลงาน", type: "text", bilingual: true, required: true },
     { name: "authors", label: "ผู้แต่ง", type: "text", help: "คั่นชื่อด้วยเครื่องหมายจุลภาค" },
+    { name: "cover_url", label: "รูปภาพงานวิจัย", type: "image", help: "อัปโหลดหรือเลือกภาพสำหรับผลงานนี้ หากไม่ใส่ภาพจะแสดงเฉพาะข้อความ" },
     { name: "venue", label: "แหล่งเผยแพร่", type: "text", bilingual: true },
     { name: "abstract", label: "บทคัดย่อ", type: "textarea", bilingual: true },
     { name: "year", label: "ปีที่เผยแพร่", type: "number" },
@@ -497,6 +521,7 @@ export const COLLECTIONS = {
   news,
   activities,
   committee,
+  team,
   research,
   awards,
   jobs,

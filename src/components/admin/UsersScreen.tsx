@@ -9,7 +9,7 @@ import { Card, CardHead, EmptyState, formatThaiDateTime } from "./ui";
 import { ConfirmDialog } from "./ConfirmDialog";
 
 type User = {
-  id: string; email: string; name: string; role: "admin" | "editor";
+  id: string; username: string; name: string; role: "admin" | "editor";
   created_at: string; last_login_at: string | null;
 };
 
@@ -60,7 +60,7 @@ export function UsersScreen({ initial, currentUserId }: { initial: User[]; curre
 }
 
 function NewUserForm({ onCreated, onCancel }: { onCreated: (u: User) => void; onCancel: () => void }) {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState<"admin" | "editor">("editor");
   const [password, setPassword] = useState("");
@@ -69,10 +69,10 @@ function NewUserForm({ onCreated, onCancel }: { onCreated: (u: User) => void; on
   function submit(e: React.FormEvent) {
     e.preventDefault();
     start(async () => {
-      const res = await createAdminUser({ email, name, role, password });
+      const res = await createAdminUser({ username, name, role, password });
       if (!res.ok) { toast.error(res.error); return; }
       toast.success("เพิ่มผู้ใช้แล้ว");
-      onCreated({ id: res.data.id, email: email.toLowerCase(), name, role, created_at: new Date().toISOString(), last_login_at: null });
+      onCreated({ id: res.data.id, username: username.toLowerCase(), name, role, created_at: new Date().toISOString(), last_login_at: null });
     });
   }
 
@@ -81,8 +81,8 @@ function NewUserForm({ onCreated, onCancel }: { onCreated: (u: User) => void; on
       <Field label="ชื่อ" required>
         <Input value={name} onChange={(e) => setName(e.target.value)} required />
       </Field>
-      <Field label="อีเมล" required>
-        <Input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+      <Field label="ชื่อผู้ใช้" required hint="ใช้ a-z, 0-9, _ หรือ - ได้">
+        <Input value={username} onChange={(e) => setUsername(e.target.value.toLowerCase())} required minLength={3} maxLength={32} autoCapitalize="none" spellCheck={false} placeholder="smartlab" />
       </Field>
       <Field label="สิทธิ์การใช้งาน" required>
         <Select value={role} onChange={(e) => setRole(e.target.value as "admin" | "editor")}>
@@ -143,7 +143,7 @@ function UserRow({
     <div className="flex flex-wrap items-center gap-3 px-5 py-3.5">
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium">{user.name} {isSelf && <span className="text-xs text-faint">(คุณ)</span>}</p>
-        <p className="truncate text-[13px] text-muted">{user.email}</p>
+        <p className="truncate text-[13px] text-muted">@{user.username}</p>
       </div>
       <p className="hidden shrink-0 text-xs text-faint sm:block">
         {user.last_login_at ? `เข้าใช้ล่าสุด ${formatThaiDateTime(user.last_login_at)}` : "ยังไม่เคยเข้าใช้"}
@@ -192,7 +192,7 @@ function UserRow({
           <button aria-label="ปิด" onClick={() => setConfirmReset(false)} className="absolute inset-0 bg-ink/40 backdrop-blur-[2px]" />
           <div className="relative w-[min(22rem,100%)] rounded-2xl border border-line bg-paper p-5 shadow-2xl">
             <p className="text-[15px] font-semibold">ตั้งรหัสผ่านใหม่</p>
-            <p className="mt-1 text-sm text-muted">สำหรับ {user.email}</p>
+            <p className="mt-1 text-sm text-muted">สำหรับ @{user.username}</p>
             <Input
               type="text"
               value={newPassword}

@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Home, Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type NavNode = { label: string; href: string; newTab: boolean; children: NavNode[] };
@@ -28,8 +29,9 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
+  const isHome = (href: string) => /^\/(?:th|en)\/?$/.test(href) || href === "/";
   const isActive = (href: string) =>
-    href !== "" && (pathname === href || (href !== "/" && pathname.startsWith(href + "/")));
+    href !== "" && (pathname === href || (!isHome(href) && pathname.startsWith(href + "/")));
   const activeBranch = (node: NavNode) =>
     isActive(node.href) || node.children.some((c) => isActive(c.href));
 
@@ -42,12 +44,14 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
               {item.children.length === 0 ? (
                 <Link
                   href={item.href || "#"}
+                  aria-label={isHome(item.href) ? item.label : undefined}
+                  title={isHome(item.href) ? item.label : undefined}
                   className={cn(
                     "flex h-16 items-center whitespace-nowrap rounded-md px-3 text-[14px] font-medium text-ink-2 transition-colors hover:text-ink",
                     activeBranch(item) && "text-accent",
                   )}
                 >
-                  {item.label}
+                  {isHome(item.href) ? <Home className="size-5" aria-hidden="true" /> : item.label}
                 </Link>
               ) : (
                 <>
@@ -104,7 +108,7 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
         <Menu className="size-5" />
       </button>
 
-      {open && (
+      {open && createPortal(
         <div className="fixed inset-0 z-[70] lg:hidden">
           <button
             aria-label="ปิดเมนู"
@@ -130,12 +134,14 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
                     {item.children.length === 0 ? (
                       <Link
                         href={item.href || "#"}
+                  aria-label={isHome(item.href) ? item.label : undefined}
+                  title={isHome(item.href) ? item.label : undefined}
                         className={cn(
                           "block rounded-lg px-3 py-2.5 text-[15px] font-medium",
                           activeBranch(item) ? "bg-surface text-accent" : "text-ink",
                         )}
                       >
-                        {item.label}
+                        {isHome(item.href) ? <Home className="size-5" aria-hidden="true" /> : item.label}
                       </Link>
                     ) : (
                       <>
@@ -183,7 +189,7 @@ export function HeaderNav({ items, ctaLabel, ctaHref, menuLabel }: Props) {
               </Link>
             </nav>
           </div>
-        </div>
+        </div>, document.body
       )}
     </>
   );

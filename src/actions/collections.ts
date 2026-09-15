@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { sql } from "@/lib/db";
 import { audit, requireUser } from "@/lib/auth";
 import { sanitizeHtml, slugify } from "@/lib/utils";
+import { validateStaff } from "@/lib/staff";
 import {
   columnKinds,
   getCollection,
@@ -138,6 +139,11 @@ export async function createRow(
     const config = getCollection(key);
     const payload = sanitizeValues(config, values);
 
+    if (key === "team") {
+      const error = validateStaff(payload);
+      if (error) return { ok: false, error };
+    }
+
     if (config.scopeColumn && !payload[config.scopeColumn]) {
       return { ok: false, error: "ไม่พบกลุ่มของรายการที่จะเพิ่ม" };
     }
@@ -156,7 +162,7 @@ export async function createRow(
     const [row] = await sql<{ id: string }[]>`
       insert into ${sql(config.table)} ${sql(payload, columns)} returning id`;
 
-    await audit(user.email, "create", config.table, row.id, null, payload);
+    await audit(user.username, "create", config.table, row.id, null, payload);
     revalidate(config);
     return { ok: true, data: { id: row.id } };
   } catch (e) {
@@ -178,6 +184,10 @@ export async function updateRow(
     if (!before) return { ok: false, error: "ไม่พบรายการที่ต้องการแก้ไข" };
 
     const payload = sanitizeValues(config, values);
+    if (key === "team") {
+      const error = validateStaff({ ...before, ...payload });
+      if (error) return { ok: false, error };
+    }
     await ensureSlug(config, payload, id);
     if (config.hasStatus) {
       const status = readStatus(values);
@@ -190,7 +200,7 @@ export async function updateRow(
     await sql`
       update ${sql(config.table)} set ${sql(payload, columns)} where id = ${id}`;
 
-    await audit(user.email, "update", config.table, id, before, payload);
+    await audit(user.username, "update", config.table, id, before, payload);
     revalidate(config);
     return { ok: true, data: { id } };
   } catch (e) {
@@ -208,7 +218,7 @@ export async function deleteRow(key: string, id: string): Promise<ActionResult> 
     if (!before) return { ok: false, error: "ไม่พบรายการที่ต้องการลบ" };
 
     await sql`delete from ${sql(config.table)} where id = ${id}`;
-    await audit(user.email, "delete", config.table, id, before, null);
+    await audit(user.username, "delete", config.table, id, before, null);
     revalidate(config);
     return { ok: true };
   } catch (e) {
@@ -260,7 +270,7 @@ export async function duplicateRow(
     const [row] = await sql<{ id: string }[]>`
       insert into ${sql(config.table)} ${sql(payload, columns)} returning id`;
 
-    await audit(user.email, "duplicate", config.table, row.id, source, payload);
+    await audit(user.username, "duplicate", config.table, row.id, source, payload);
     revalidate(config);
     return { ok: true, data: { id: row.id } };
   } catch (e) {
@@ -309,7 +319,7 @@ export async function reorderRow(
       }
     });
 
-    await audit(user.email, "reorder", config.table, id, null, { direction });
+    await audit(user.username, "reorder", config.table, id, null, { direction });
     revalidate(config);
     return { ok: true };
   } catch (e) {
@@ -335,7 +345,7 @@ export async function setStatus(
     if (!before) return { ok: false, error: "ไม่พบรายการ" };
 
     await sql`update ${sql(config.table)} set status = ${status} where id = ${id}`;
-    await audit(user.email, "status", config.table, id, { status: before.status }, { status });
+    await audit(user.username, "status", config.table, id, { status: before.status }, { status });
     revalidate(config);
     return { ok: true };
   } catch (e) {

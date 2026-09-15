@@ -101,6 +101,14 @@ export const REGISTRY: PageDef[] = [
         ],
       },
       {
+        section: "features",
+        label: "รูปภาพการ์ดหน้าแรก",
+        blocks: [
+          { key: "home.features.research_image", label: "ภาพการ์ดงานวิจัย", type: "image", th: "", en: "" },
+          { key: "home.features.about_image", label: "ภาพการ์ดเกี่ยวกับ RISA", type: "image", th: "", en: "" },
+        ],
+      },
+      {
         section: "vision",
         label: "วิสัยทัศน์ / พันธกิจ",
         blocks: [

@@ -12,17 +12,22 @@ type Props = {
   imgClassName?: string;
   /** Seed for the generated placeholder shown when no image is set. */
   seed?: string;
+  fallbackSrc?: string;
+  priority?: boolean;
+  hideWhenEmpty?: boolean;
 };
 
 /** A registry-backed image slot. Click to pick or upload in edit mode. */
-export async function EditableImage({ k, alt = "", className, imgClassName, seed }: Props) {
+export async function EditableImage({ k, alt = "", className, imgClassName, seed, fallbackSrc, priority = false, hideWhenEmpty = false }: Props) {
   const [map, editing, locale] = await Promise.all([getContentMap(), isEditMode(), getLocale()]);
   const block = map.get(k);
   const url = blockValue(block, locale);
 
-  const inner = url ? (
+  const imageSrc = url || fallbackSrc;
+  if (!imageSrc && !editing && hideWhenEmpty) return null;
+  const inner = imageSrc ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={url} alt={alt} className={cn("size-full object-cover", imgClassName)} loading="lazy" />
+    <img src={imageSrc} alt={alt} className={cn("size-full object-cover", imgClassName)} loading={priority ? "eager" : "lazy"} fetchPriority={priority ? "high" : undefined} />
   ) : (
     <Placeholder seed={seed ?? k} className={cn("size-full", imgClassName)} />
   );

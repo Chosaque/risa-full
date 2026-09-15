@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { content } from "@/lib/content";
 import { getLocale } from "@/lib/request";
-import { pick } from "@/lib/i18n";
-import { getTimeline } from "@/lib/queries";
 import { Editable, EditableRich } from "@/components/editable/Editable";
-import { PageHero } from "@/components/site/PageHero";
 import { Section, SectionHead } from "@/components/site/Section";
 import { ListSection } from "@/components/site/ListSection";
 import { StatsStrip } from "@/components/site/StatsStrip";
@@ -19,17 +17,16 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [locale, timeline] = await Promise.all([getLocale(), getTimeline()]);
+  const locale = await getLocale();
 
   return (
     <>
-      <PageHero
-        eyebrowKey="about.hero.eyebrow"
-        titleKey="about.hero.title"
-        subtitleKey="about.hero.subtitle"
-      />
-
       <Section>
+        <nav aria-label={locale === "th" ? "เกี่ยวกับสมาคม" : "About the association"} className="mb-10 flex flex-wrap gap-6 border-b border-line text-sm">
+          <Link href={`/${locale}/about`} aria-current="page" className="border-b-2 border-accent pb-3 text-ink">{locale === "th" ? "เกี่ยวกับสมาคม" : "About RISA"}</Link>
+          <Link href={`/${locale}/committee`} className="pb-3 text-muted hover:text-ink">{locale === "th" ? "คณะกรรมการ" : "Committee"}</Link>
+          <Link href={`/${locale}/team`} className="pb-3 text-muted hover:text-ink">{locale === "th" ? "บุคลากร" : "Our Team"}</Link>
+        </nav>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
             <Editable
@@ -51,34 +48,6 @@ export default async function AboutPage() {
             <ListSection listKey="about.objectives" columns={2} variant="plain" />
           </div>
         </div>
-      </Section>
-
-      {/* ── timeline ────────────────────────────────────────────────────── */}
-      <Section tone="surface">
-        <SectionHead
-          title={<Editable k="about.timeline.title" as="span" />}
-          lead={<Editable k="about.timeline.body" as="span" />}
-          className="mb-12"
-        />
-        <ol className="relative border-l border-line pl-8 md:pl-10">
-          {timeline.map((event) => (
-            <li key={event.id} className="relative pb-10 last:pb-0">
-              <span
-                aria-hidden
-                className="absolute -left-[2.3rem] top-1 flex size-4 items-center justify-center rounded-full border-2 border-accent bg-paper md:-left-[2.8rem]"
-              >
-                <span className="size-1.5 rounded-full bg-accent" />
-              </span>
-              <p className="font-mono text-sm font-semibold tracking-wide text-accent">
-                {pick(event, "year", locale)}
-              </p>
-              <h3 className="mt-1.5 text-[19px] font-semibold">{pick(event, "title", locale)}</h3>
-              <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted">
-                {pick(event, "body", locale)}
-              </p>
-            </li>
-          ))}
-        </ol>
       </Section>
 
       <Section>

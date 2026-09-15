@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CurtainEntrance } from "./CurtainEntrance";
 import { getContentMap, blockValue, getNav, getSettings } from "@/lib/content";
 import { getLocale } from "@/lib/request";
 import { localePath, pick, t } from "@/lib/i18n";
@@ -28,6 +29,7 @@ export async function Header() {
   const orgName = pick(settings, "org_name", locale);
 
   return (
+    <CurtainEntrance locale={locale}>
     <header className="sticky top-0 z-[60] border-b border-line bg-paper/92 backdrop-blur-md">
       <a
         href="#main"
@@ -41,7 +43,7 @@ export async function Header() {
           <img
             src={settings.logo_url || "/risa-wordmark.png"}
             alt="RISA"
-            className="h-6 w-auto shrink-0 md:h-7"
+            className="h-10 w-auto max-w-[140px] shrink-0 object-contain md:h-14 md:max-w-[180px]"
           />
           <span className="hidden min-w-0 border-l border-line pl-3 text-[11px] leading-tight text-muted min-[1440px]:block">
             <span className="line-clamp-2 max-w-[15rem]">{orgName}</span>
@@ -59,5 +61,6 @@ export async function Header() {
         </div>
       </div>
     </header>
+    </CurtainEntrance>
   );
 }

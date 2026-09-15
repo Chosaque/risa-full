@@ -21,6 +21,7 @@ export const ADMIN_NAV: NavGroup[] = [
       { href: "/admin/news", label: "ข่าวสาร" },
       { href: "/admin/activities", label: "กิจกรรม" },
       { href: "/admin/committee", label: "คณะกรรมการ" },
+      { href: "/admin/team", label: "บุคลากร" },
       { href: "/admin/research", label: "งานวิจัย" },
       { href: "/admin/awards", label: "รางวัล" },
       { href: "/admin/jobs", label: "ตำแหน่งงาน" },

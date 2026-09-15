@@ -31,7 +31,7 @@ export default async function NewsPage({ searchParams }: PageProps<"/[locale]/ne
 
   return (
     <>
-      <PageHero eyebrowKey="news.hero.eyebrow" titleKey="news.hero.title" subtitleKey="news.hero.subtitle" />
+      <PageHero titleKey="news.hero.title" subtitleKey="news.hero.subtitle" />
       <Section>
         {items.length === 0 ? (
           <EmptyState label={t(locale, "noResults")} />

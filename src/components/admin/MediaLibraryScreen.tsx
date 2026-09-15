@@ -6,6 +6,7 @@ import { Check, Copy, Loader2, Search, Trash2, Upload } from "lucide-react";
 import { formatBytes } from "@/lib/utils";
 import { EmptyState } from "./ui";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { UPLOAD_SIZE_HINT, validateUploadSize } from "@/lib/upload-limits";
 
 type MediaItem = { id: string; url: string; filename: string; mime: string; size_bytes: number | null; created_at: string };
 
@@ -27,6 +28,7 @@ export function MediaLibraryScreen({ initial }: { initial: MediaItem[] }) {
     if (!files?.length) return;
     setUploading(true);
     try {
+      Array.from(files).forEach(validateUploadSize);
       for (const file of Array.from(files)) {
         const body = new FormData();
         body.append("file", file);
@@ -62,6 +64,7 @@ export function MediaLibraryScreen({ initial }: { initial: MediaItem[] }) {
 
   return (
     <div>
+      <p className="mb-4 text-sm text-muted">รูปภาพและเอกสารสำหรับเว็บไซต์ · {UPLOAD_SIZE_HINT}</p>
       <div className="mb-5 flex flex-wrap items-center gap-2">
         <div className="relative">
           <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-faint" />
