@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { content } from "@/lib/content";
 import { getLocale } from "@/lib/request";
-import { pick } from "@/lib/i18n";
-import { getTimeline } from "@/lib/queries";
 import { Editable, EditableRich } from "@/components/editable/Editable";
 import { PageHero } from "@/components/site/PageHero";
 import { Section, SectionHead } from "@/components/site/Section";
@@ -19,7 +17,6 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [locale, timeline] = await Promise.all([getLocale(), getTimeline()]);
 
   return (
     <>
@@ -51,34 +48,6 @@ export default async function AboutPage() {
             <ListSection listKey="about.objectives" columns={2} variant="plain" />
           </div>
         </div>
-      </Section>
-
-      {/* ── timeline ────────────────────────────────────────────────────── */}
-      <Section tone="surface">
-        <SectionHead
-          title={<Editable k="about.timeline.title" as="span" />}
-          lead={<Editable k="about.timeline.body" as="span" />}
-          className="mb-12"
-        />
-        <ol className="relative border-l border-line pl-8 md:pl-10">
-          {timeline.map((event) => (
-            <li key={event.id} className="relative pb-10 last:pb-0">
-              <span
-                aria-hidden
-                className="absolute -left-[2.3rem] top-1 flex size-4 items-center justify-center rounded-full border-2 border-accent bg-paper md:-left-[2.8rem]"
-              >
-                <span className="size-1.5 rounded-full bg-accent" />
-              </span>
-              <p className="font-mono text-sm font-semibold tracking-wide text-accent">
-                {pick(event, "year", locale)}
-              </p>
-              <h3 className="mt-1.5 text-[19px] font-semibold">{pick(event, "title", locale)}</h3>
-              <p className="mt-2 max-w-2xl text-[15px] leading-relaxed text-muted">
-                {pick(event, "body", locale)}
-              </p>
-            </li>
-          ))}
-        </ol>
       </Section>
 
       <Section>
