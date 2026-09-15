@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { content } from "@/lib/content";
 import { getLocale } from "@/lib/request";
 import { Editable, EditableRich } from "@/components/editable/Editable";
-import { PageHero } from "@/components/site/PageHero";
 import { Section, SectionHead } from "@/components/site/Section";
 import { ListSection } from "@/components/site/ListSection";
 import { StatsStrip } from "@/components/site/StatsStrip";
@@ -20,12 +19,6 @@ export default async function AboutPage() {
 
   return (
     <>
-      <PageHero
-        eyebrowKey="about.hero.eyebrow"
-        titleKey="about.hero.title"
-        subtitleKey="about.hero.subtitle"
-      />
-
       <Section>
         <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-5">
