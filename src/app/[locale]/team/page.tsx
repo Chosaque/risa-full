@@ -8,7 +8,7 @@ import { Section } from "@/components/site/Section";
 
 export async function generateMetadata(): Promise<Metadata> {
   const th = (await getLocale()) === "th";
-  return { title: th ? "บุคลากร · RISA" : "Our Team · RISA", description: th ? "รู้จักบุคลากรและช่องทางติดต่อของ RISA" : "Meet the RISA team and find their professional contact details." };
+  return { title: th ? "บุคลากร" : "Our Team", description: th ? "รู้จักบุคลากรและช่องทางติดต่อของ RISA" : "Meet the RISA team and find their professional contact details." };
 }
 
 export default async function TeamPage() {
