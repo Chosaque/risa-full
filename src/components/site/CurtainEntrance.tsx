@@ -9,7 +9,6 @@ export function CurtainEntrance({ children, locale }: { children: ReactNode; loc
   const home = pathname.replace(/\/$/, "") === `/${locale}`;
   const stage = useRef<HTMLElement>(null);
   const navigation = useRef<HTMLDivElement>(null);
-  const logo = useRef<HTMLImageElement>(null);
   const th = locale === "th";
 
   useEffect(() => {
@@ -33,15 +32,6 @@ export function CurtainEntrance({ children, locale }: { children: ReactNode; loc
       nav.dataset.visible = String(visible);
       nav.inert = !visible;
       nav.setAttribute("aria-hidden", String(!visible));
-      const destination = nav.querySelector("img")?.getBoundingClientRect();
-      if (logo.current && destination) {
-        const width = Math.min(window.innerWidth * 0.78, 860);
-        const startX = (window.innerWidth - width) / 2;
-        const startY = viewport * 0.4 - width * (368 / 1280) / 2;
-        logo.current.style.width = `${width + (destination.width - width) * eased}px`;
-        logo.current.style.left = `${startX + (destination.left - startX) * eased}px`;
-        logo.current.style.top = `${startY + (destination.top - startY) * eased}px`;
-      }
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(paint); };
     paint();
@@ -84,7 +74,7 @@ export function CurtainEntrance({ children, locale }: { children: ReactNode; loc
         <div className={`${styles.panel} ${styles.right}`} aria-hidden />
         {/* Use the existing transparent official logo lockup, not a reconstructed wordmark. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img ref={logo} className={styles.logo} src="/risa-lockup.png" alt="RISA — Research and Industry Standards Advancement Association" fetchPriority="high" />
+        <img className={styles.logo} src="/risa-lockup.png" alt="RISA — Research and Industry Standards Advancement Association" fetchPriority="high" />
         <div className={styles.invitation}>
           <p>{th ? "งานวิจัย · อุตสาหกรรม · มาตรฐาน" : "RESEARCH · INDUSTRY · STANDARDS"}</p>
           <button type="button" onClick={reveal}>{th ? "เลื่อนเพื่อเปิด" : "SCROLL TO OPEN"}<span aria-hidden>↓</span></button>
