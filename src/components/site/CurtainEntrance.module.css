@@ -6,9 +6,9 @@
 .scene { position: sticky; top: 0; height: 100svh; overflow: hidden; isolation: isolate; background: #faf9f6; }
 .backdrop { position: absolute; inset: 0; background: #25352c; }
 .backdrop > img { width: 100%; height: 100%; object-fit: cover; object-position: center; }
-.backdrop::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(8 20 20 / 10%), rgb(8 20 20 / 72%)); }
+.backdrop::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(8 20 20 / 20%), rgb(8 20 20 / 88%)); }
 .caption { position: absolute; inset: auto 8% 12%; z-index: 1; color: white; }
-.caption p { font-size: 11px; letter-spacing: .22em; margin-bottom: 24px; }
+.caption .aboutCopy { max-width: 680px; font-size: clamp(15px, 1.4vw, 19px); line-height: 1.8; letter-spacing: 0; margin-top: 20px; text-wrap: pretty; }
 .caption h1 { font-size: clamp(32px, 4.7vw, 70px); line-height: 1.35; font-weight: 400; letter-spacing: -.03em; }
 .caption a { display: inline-flex; gap: 32px; margin-top: 28px; padding-block: 10px; border-bottom: 1px solid #ffffff80; }
 .panel { position: absolute; top: 0; bottom: 0; width: 50.1%; z-index: 2; background: #faf9f6; will-change: transform; }
@@ -29,8 +29,14 @@
   .left { transform: translateY(calc(var(--open) * -101%)); }
   .right { top: auto; bottom: 0; transform: translateY(calc(var(--open) * 101%)); }
   .invitation { top: 58%; }
-  .caption { bottom: 15%; }
-  .caption p { font-size: 9px; letter-spacing: .14em; }
+  .caption { bottom: 9%; }
+  .caption .aboutCopy { font-size: 15px; line-height: 1.75; margin-top: 16px; }
+}
+@media (max-height: 540px) {
+  .caption { inset: 90px 6% 20px; overflow-y: auto; }
+  .caption h1 { font-size: 30px; }
+  .caption .aboutCopy { font-size: 14px; margin-top: 10px; }
+  .caption a { margin-top: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .stage { height: 100svh; }
