@@ -11,6 +11,23 @@ import { Input } from "@/components/ui/field";
 import { Card, CardHead, EmptyState } from "./ui";
 import { ConfirmDialog } from "./ConfirmDialog";
 
+function LinkField({ label, hint, ...props }: React.ComponentProps<typeof Input> & { label: string; hint?: string }) {
+  return (
+    <label className="flex min-w-40 flex-1 flex-col gap-1.5 text-xs text-muted">
+      <span className="font-medium text-ink">{label}</span>
+      <Input {...props} className="h-10 w-full text-sm" />
+      {hint && <span className="text-xs leading-relaxed">{hint}</span>}
+    </label>
+  );
+}
+
+function EditingHelp() {
+  return <p className="border-b border-line-soft px-5 py-3 text-sm leading-relaxed text-muted">
+    แก้ไขข้อความแล้วคลิกออกจากช่องเพื่อบันทึกอัตโนมัติ การเพิ่ม ลบ และเปลี่ยนลำดับมีผลทันที
+    ใช้ปุ่มลูกศรเพื่อเลื่อนรายการขึ้นหรือลง
+  </p>;
+}
+
 type NavRow = {
   id: string; label_th: string; label_en: string; href: string;
   parent_id: string | null; new_tab: boolean; status: string; sort: number;
@@ -52,8 +69,8 @@ export function NavItemsEditor({ items }: { items: NavRow[] }) {
   return (
     <Card>
       <CardHead
-        title="เมนูหลัก"
-        hint="รองรับ 2 ระดับ — ลากลำดับด้วยปุ่มลูกศร"
+        title="1. เมนูด้านบนเว็บไซต์"
+        hint="เมนูหลักอยู่บนแถบด้านบน ส่วนเมนูย่อยจะแสดงใต้เมนูหลักนั้นเมื่อเปิดเมนู"
         actions={
           <button
             type="button"
@@ -64,6 +81,7 @@ export function NavItemsEditor({ items }: { items: NavRow[] }) {
           </button>
         }
       />
+      <EditingHelp />
       <div className="divide-y divide-line-soft">
         {roots.length === 0 ? (
           <EmptyState title="ยังไม่มีเมนู" className="border-0" />
@@ -93,7 +111,7 @@ export function NavItemsEditor({ items }: { items: NavRow[] }) {
                   onClick={() => addChild(root.id)}
                   className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-accent hover:bg-accent-soft"
                 >
-                  <Plus className="size-3" /> เพิ่มเมนูย่อย
+                  <Plus className="size-3" /> เพิ่มเมนูย่อยใต้ “{root.label_th}”
                 </button>
               </div>
             </div>
@@ -136,26 +154,26 @@ function NavRowEditor({
   return (
     <div className="flex flex-wrap items-center gap-2 rounded-lg bg-surface/60 p-2.5">
       <div className="flex shrink-0 flex-col">
-        <button type="button" disabled={pending || index === 0} onClick={() => move("up")} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-30">
+        <button type="button" aria-label="เลื่อนขึ้น" title="เลื่อนขึ้น" disabled={pending || index === 0} onClick={() => move("up")} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-30">
           <ArrowUp className="size-3" />
         </button>
-        <button type="button" disabled={pending || index === siblingCount - 1} onClick={() => move("down")} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-30">
+        <button type="button" aria-label="เลื่อนลง" title="เลื่อนลง" disabled={pending || index === siblingCount - 1} onClick={() => move("down")} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-30">
           <ArrowDown className="size-3" />
         </button>
       </div>
-      <Input
+      <LinkField label="ชื่อเมนูภาษาไทย"
         defaultValue={row.label_th}
         onBlur={(e) => e.target.value !== row.label_th && save({ label_th: e.target.value })}
         placeholder="ป้ายกำกับ (ไทย)"
         className="h-8 w-36 text-[13px]"
       />
-      <Input
+      <LinkField label="ชื่อเมนูภาษาอังกฤษ"
         defaultValue={row.label_en}
         onBlur={(e) => e.target.value !== row.label_en && save({ label_en: e.target.value })}
         placeholder="Label (English)"
         className="h-8 w-36 text-[13px]"
       />
-      <Input
+      <LinkField label="ลิงก์ปลายทาง" hint="หน้าในเว็บ เช่น /about · เว็บอื่น เช่น https://example.com"
         defaultValue={row.href}
         onBlur={(e) => e.target.value !== row.href && save({ href: e.target.value })}
         placeholder="/about หรือ https://…"
@@ -167,16 +185,18 @@ function NavRowEditor({
           defaultChecked={row.new_tab}
           onChange={(e) => save({ new_tab: e.target.checked })}
         />
-        แท็บใหม่
+        เปิดลิงก์ในแท็บใหม่
       </label>
       <button
         type="button"
+        disabled={pending}
+        aria-label={row.status === "published" ? "ซ่อนเมนูนี้จากเว็บไซต์" : "แสดงเมนูนี้บนเว็บไซต์"}
         onClick={() => save({ status: row.status === "published" ? "draft" : "published" })}
         className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${
           row.status === "published" ? "bg-green-50 text-green-700" : "bg-surface-2 text-muted"
         }`}
       >
-        {row.status === "published" ? "แสดงผล" : "ซ่อนอยู่"}
+        {row.status === "published" ? "แสดงอยู่ · คลิกเพื่อซ่อน" : "ซ่อนอยู่ · คลิกเพื่อแสดง"}
       </button>
       {pending && <Loader2 className="size-3.5 shrink-0 animate-spin text-faint" />}
       <button type="button" onClick={() => setConfirmOpen(true)} aria-label="ลบเมนู" className="shrink-0 rounded-lg p-1.5 text-muted hover:bg-red-50 hover:text-red-600">
@@ -221,8 +241,9 @@ export function FooterLinksEditor({ links }: { links: FooterRow[] }) {
 
   return (
     <Card>
-      <CardHead title="ลิงก์ในฟุตเตอร์" hint="จัดกลุ่มเป็น 2 คอลัมน์ตามโครงหน้าเว็บ" />
-      <div className="grid gap-5 p-5 sm:grid-cols-2">
+      <CardHead title="2. ลิงก์ส่วนท้ายเว็บไซต์ (ฟุตเตอร์)" hint="ลิงก์ที่ผู้เข้าชมเห็นเมื่อเลื่อนลงไปล่างสุดของหน้า แบ่งเป็นกลุ่มเมนูลัดและทรัพยากร" />
+      <EditingHelp />
+      <div className="grid gap-5 p-5">
         {FOOTER_COLUMNS.map((col) => {
           const list = rows.filter((r) => r.column_key === col.value).sort((a, b) => a.sort - b.sort);
           return (
@@ -244,7 +265,7 @@ export function FooterLinksEditor({ links }: { links: FooterRow[] }) {
                   onClick={() => addLink(col.value)}
                   className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-accent hover:bg-accent-soft"
                 >
-                  <Plus className="size-3" /> เพิ่มลิงก์
+                  <Plus className="size-3" /> เพิ่มลิงก์ใน{col.label}
                 </button>
               </div>
             </div>
@@ -287,26 +308,26 @@ function FooterRowEditor({
   return (
     <div className="flex flex-wrap items-center gap-1.5 rounded-lg bg-surface/60 p-2">
       <div className="flex shrink-0 flex-col">
-        <button type="button" disabled={pending || index === 0} onClick={() => move("up")} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-30">
+        <button type="button" aria-label="เลื่อนขึ้น" title="เลื่อนขึ้น" disabled={pending || index === 0} onClick={() => move("up")} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-30">
           <ArrowUp className="size-3" />
         </button>
-        <button type="button" disabled={pending || index === siblingCount - 1} onClick={() => move("down")} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-30">
+        <button type="button" aria-label="เลื่อนลง" title="เลื่อนลง" disabled={pending || index === siblingCount - 1} onClick={() => move("down")} className="rounded p-0.5 text-faint hover:text-ink disabled:opacity-30">
           <ArrowDown className="size-3" />
         </button>
       </div>
-      <Input
+      <LinkField label="ชื่อลิงก์ภาษาไทย"
         defaultValue={row.label_th}
         onBlur={(e) => e.target.value !== row.label_th && save({ label_th: e.target.value })}
         placeholder="ป้ายกำกับ (ไทย)"
         className="h-8 w-28 text-[13px]"
       />
-      <Input
+      <LinkField label="ชื่อลิงก์ภาษาอังกฤษ"
         defaultValue={row.label_en}
         onBlur={(e) => e.target.value !== row.label_en && save({ label_en: e.target.value })}
         placeholder="English"
         className="h-8 w-28 text-[13px]"
       />
-      <Input
+      <LinkField label="ลิงก์ปลายทาง" hint="หน้าในเว็บ เช่น /about · เว็บอื่น เช่น https://example.com"
         defaultValue={row.href}
         onBlur={(e) => e.target.value !== row.href && save({ href: e.target.value })}
         className="h-8 flex-1 min-w-24 font-mono text-[12px]"
