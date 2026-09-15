@@ -4,7 +4,7 @@ import { Editable } from "@/components/editable/Editable";
 export function PageHero({
   eyebrowKey, titleKey, subtitleKey, children,
 }: {
-  eyebrowKey: string;
+  eyebrowKey?: string;
   titleKey: string;
   subtitleKey?: string;
   children?: React.ReactNode;
@@ -17,11 +17,11 @@ export function PageHero({
         style={{ background: "var(--color-accent)" }}
       />
       <div className="container-page relative py-14 md:py-20">
-        <Editable
+        {eyebrowKey && <Editable
           k={eyebrowKey}
           as="p"
           className="mb-3 flex items-center gap-2 text-[13px] font-semibold uppercase tracking-[0.14em] text-accent"
-        />
+        />}
         <Editable k={titleKey} as="h1" className="max-w-3xl text-[2rem] font-semibold md:text-[2.75rem]" />
         {subtitleKey && (
           <Editable
